@@ -3,8 +3,8 @@ from sqlalchemy.orm import Session
 
 # Import database dependency and models
 from app.database import get_db
-from app.models import Folder as FolderModel
-from app.schemas import Folder, FolderResponse
+from app.models import Folder as FolderModel, Bookmark as BookmarkModel
+from app.schemas import Folder, FolderResponse, BookmarkResponse
 
 # Create API router for folder endpoints
 # Prefix: /folders
@@ -44,12 +44,39 @@ def get_folder(folder_id: int, db: Session = Depends(get_db)):
         HTTPException: If folder with given ID is not found
     """
     folder = db.query(FolderModel).filter(FolderModel.id == folder_id).first()
-    if not folder:
+    if folder is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"folder with id: {folder_id} not found",
         )
     return folder
+
+@router.get("/{folder_id}/bookmarks", response_model=list[BookmarkResponse])
+def get_folder_bookmarks(folder_id: int, db: Session = Depends(get_db)):
+    """
+    Get all bookmarks for a specific folder.
+    
+    Args:
+        folder_id: The ID of the folder to get bookmarks for
+        db: Database session dependency
+        
+    Returns:
+        List of all bookmarks in the specified folder
+        
+    Raises:
+        HTTPException: If folder with given ID is not found
+    """
+    # First check if the folder exists
+    folder = db.query(FolderModel).filter(FolderModel.id == folder_id).first()
+    if folder is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"folder with id: {folder_id} not found",
+        )
+    
+    # Get all bookmarks for this folder
+    bookmarks = db.query(BookmarkModel).filter(BookmarkModel.folder_id == folder_id).all()
+    return bookmarks
 
 @router.post("/", status_code=status.HTTP_201_CREATED, response_model=FolderResponse)
 def create_folder(folder: Folder, db: Session = Depends(get_db)):
@@ -94,7 +121,8 @@ def update_folder(folder_id: int, folder: Folder, db: Session = Depends(get_db))
         )
     update_query.update(folder.dict(), synchronize_session=False)
     db.commit()
-    return update_query.first()
+    db.refresh(existing_folder)
+    return existing_folder
 
 @router.delete("/{folder_id}")
 def delete_folder(folder_id: int, db: Session = Depends(get_db)):

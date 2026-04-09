@@ -6,6 +6,7 @@ from .routes import folders, bookmarks
 from .config import settings
 
 
+# Create tables if they don't exist
 models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI()

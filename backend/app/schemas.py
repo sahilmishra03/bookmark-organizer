@@ -5,16 +5,21 @@ class Folder(BaseModel):
     description: str
 
 class FolderResponse(Folder):
-    name: str
-    description: str
-    
+    id: int
     model_config = {"from_attributes": True}
 
 class Bookmark(BaseModel):
     title: str
     url: str
     description: str
+    favorite: bool = False
     folder_id: int
+
+class BookmarkCreate(BaseModel):
+    title: str
+    url: str
+    description: str
+    favorite: bool = False
 
 class BookmarkResponse(Bookmark):
     id: int
