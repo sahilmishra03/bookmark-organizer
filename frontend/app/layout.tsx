@@ -3,6 +3,7 @@ import { Geist_Mono, Geist } from "next/font/google";
 import "./globals.css";
 import { cn } from "@/lib/utils";
 import AppNavbar from "@/components/layout/Navbar";
+import Footer from "@/components/layout/Footer";
 import { ThemeProvider } from "@/components/layout/ThemeProvider";
 
 const geist = Geist({subsets:['latin'],variable:'--font-sans'});
@@ -13,7 +14,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Boomarki",
+  title: "Boomark-Organizer",
   description: "Save anything. Find it everywhere.",
 };
 
@@ -28,6 +29,7 @@ export default function RootLayout({
         <ThemeProvider>
           <AppNavbar />
           {children}
+          <Footer />
         </ThemeProvider>
       </body>
     </html>

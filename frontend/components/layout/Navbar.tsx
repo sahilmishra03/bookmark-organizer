@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useTheme } from "next-themes"
 import { Sun, Moon } from "lucide-react"
 import {
@@ -16,7 +16,10 @@ const navItems = [
 
 export default function AppNavbar() {
     const [open, setOpen] = useState(false)
+    const [mounted, setMounted] = useState(false)
     const { theme, setTheme } = useTheme()
+
+    useEffect(() => setMounted(true), [])
 
     return (
         <Navbar className="top-0">
@@ -29,7 +32,7 @@ export default function AppNavbar() {
                         className="p-2 rounded-md hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors"
                         aria-label="Toggle theme"
                     >
-                        {theme === "dark" ? <Sun size={18} /> : <Moon size={18} />}
+                        {mounted ? (theme === "dark" ? <Sun size={18} /> : <Moon size={18} />) : <Moon size={18} />}
                     </button>
                     <NavbarButton className="text-shadow-2xs " variant="secondary" href="#">Sign in</NavbarButton>
                     <NavbarButton variant="dark" href="#">Start for free</NavbarButton>
@@ -52,8 +55,8 @@ export default function AppNavbar() {
                         onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
                         className="flex items-center gap-2 text-neutral-600 dark:text-neutral-300 text-sm font-medium"
                     >
-                        {theme === "dark" ? <Sun size={16} /> : <Moon size={16} />}
-                        {theme === "dark" ? "Light mode" : "Dark mode"}
+                        {mounted ? (theme === "dark" ? <Sun size={16} /> : <Moon size={16} />) : <Moon size={16} />}
+                        {mounted ? (theme === "dark" ? "Light mode" : "Dark mode") : "Dark mode"}
                     </button>
                     <NavbarButton variant="dark" href="#" className="w-full">Start for free</NavbarButton>
                 </MobileNavMenu>
