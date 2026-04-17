@@ -1,1 +1,0 @@
-print("Frontend part is not ready yet")
