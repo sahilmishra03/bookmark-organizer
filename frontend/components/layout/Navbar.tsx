@@ -34,8 +34,7 @@ export default function AppNavbar() {
                     >
                         {mounted ? (theme === "dark" ? <Sun size={18} /> : <Moon size={18} />) : <Moon size={18} />}
                     </button>
-                    <NavbarButton className="text-shadow-2xs " variant="secondary" href="#">Sign in</NavbarButton>
-                    <NavbarButton variant="dark" href="#">Start for free</NavbarButton>
+                    <NavbarButton variant="dark" href="/login">Start for free</NavbarButton>
                 </div>
             </NavBody>
 
@@ -58,7 +57,7 @@ export default function AppNavbar() {
                         {mounted ? (theme === "dark" ? <Sun size={16} /> : <Moon size={16} />) : <Moon size={16} />}
                         {mounted ? (theme === "dark" ? "Light mode" : "Dark mode") : "Dark mode"}
                     </button>
-                    <NavbarButton variant="dark" href="#" className="w-full">Start for free</NavbarButton>
+                    <NavbarButton variant="dark" href="/login" className="w-full">Start for free</NavbarButton>
                 </MobileNavMenu>
             </MobileNav>
         </Navbar>

@@ -1,9 +1,9 @@
 import Container from "@/components/layout/Container"
-import Hero from "@/components/home/Hero"
-import SyncDevices from "@/components/home/SyncDevices"
-import BentoGrid from "@/components/home/BentoGrid"
-import Pricing from "@/components/home/Pricing"
-import CTA from "@/components/home/CTA"
+import Hero from "@/components/landing/Hero"
+import SyncDevices from "@/components/landing/SyncDevices"
+import BentoGrid from "@/components/landing/BentoGrid"
+import Pricing from "@/components/landing/Pricing"
+import CTA from "@/components/landing/CTA"
 
 const page = () => {
   return (
