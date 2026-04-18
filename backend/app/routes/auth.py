@@ -4,6 +4,7 @@ from sqlalchemy.orm import Session
 from authlib.integrations.starlette_client import OAuth
 from jose import jwt, JWTError
 import hashlib
+import uuid
 
 from ..database import get_db
 from .. import models
@@ -65,12 +66,12 @@ async def auth_callback(request: Request, db: Session = Depends(get_db)):
             user = existing_user
 
         access_token = create_access_token({
-            "user_id": user.id,
+            "user_id": str(user.id),
             "email": user.email
         })
 
         refresh_token = create_refresh_token({
-            "user_id": user.id
+            "user_id": str(user.id)
         })
 
         hashed_token = hashlib.sha256(refresh_token.encode()).hexdigest()
@@ -152,7 +153,7 @@ def refresh_token(
     new_hashed = hashlib.sha256(new_refresh.encode()).hexdigest()
 
     db.add(models.RefreshToken(
-        user_id=payload["user_id"],
+        user_id=uuid.UUID(payload["user_id"]),
         token=new_hashed
     ))
     db.commit()
