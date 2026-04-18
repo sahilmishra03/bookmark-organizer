@@ -1,6 +1,6 @@
 # Bookmark Organizer Backend
 
-A FastAPI-based backend service for the Bookmark Organizer application.
+A FastAPI backend service for the Bookmark Organizer application.
 
 ## Features
 
@@ -14,32 +14,56 @@ A FastAPI-based backend service for the Bookmark Organizer application.
 - Python 3.13 or higher
 - uv (Python package manager) - Install from https://docs.astral.sh/uv/
 
-## Installation
+## New User Setup
 
-### Using uv (Recommended)
+1. Clone the repository:
 
 ```bash
-# Clone the repository
 git clone <repository-url>
-cd bookmark-organizer-be
-
-# Install dependencies
-uv sync
-
-# Activate virtual environment
-source .venv/bin/activate  # On Windows: .venv\Scripts\activate
 ```
 
-### Using pip (Alternative)
+2. Change into the backend folder:
 
 ```bash
-# Install dependencies
+cd bookmark-organizer/backend
+```
+
+3. Install dependencies with uv:
+
+```bash
+uv sync
+```
+
+4. Activate the virtual environment:
+
+```bash
+# macOS / Linux
+source .venv/bin/activate
+
+# Windows
+.venv\Scripts\activate
+```
+
+5. Verify the installation:
+
+```bash
+python --version
+uv --version
+```
+
+> On macOS, if `python` points to Python 2, use `python3 --version` and `python3 -m pip install -r requirements.txt` instead.
+
+## Installation (Alternative)
+
+If you prefer pip, install dependencies directly:
+
+```bash
 pip install -r requirements.txt
 ```
 
-## Quick Start
+## Run the API Locally
 
-### Development Server
+Start the development server from the `backend` directory:
 
 ```bash
 # Using uv
@@ -49,28 +73,37 @@ uv run fastapi dev
 fastapi dev main.py
 ```
 
-The server will start at http://localhost:8000
+Open the backend in your browser at:
 
-### Production Deployment
+- http://localhost:8000
+- API docs: http://localhost:8000/docs
+- ReDoc: http://localhost:8000/redoc
 
-**Live Application**: https://bookmark-organizer-be-b0d62e24.fastapicloud.dev
+## Local Development Workflow
 
-### API Documentation
+1. Start the server.
+2. Open `http://localhost:8000` to verify the health check.
+3. Use `http://localhost:8000/docs` to explore available endpoints.
+4. Make code changes and keep the dev server running for hot reload.
 
-- **Development**: http://localhost:8000/docs
-- **Production**: https://bookmark-organizer-be-b0d62e24.fastapicloud.dev/docs
-- **ReDoc**: http://localhost:8000/redoc
+## Running Tests
+
+```bash
+# Using uv
+uv run pytest
+
+# Or directly
+pytest
+```
 
 ## Project Structure
 
 - `main.py` - Main FastAPI application entry point
-- `pyproject.toml` - Project configuration and dependencies (uv)
-- `requirements.txt` - Dependencies list (pip)
+- `pyproject.toml` - Project configuration and dependencies for uv
+- `requirements.txt` - Dependencies list for pip
 - `README.md` - This file
 
-## Development
-
-### Adding Dependencies
+## Adding Dependencies
 
 ```bash
 # Using uv
@@ -82,34 +115,6 @@ pip install <package-name>
 pip freeze > requirements.txt
 ```
 
-### Running Tests
-
-```bash
-# Using uv
-uv run pytest
-
-# Using pip
-pytest
-```
-
-## Deployment
-
-### FastAPI Cloud (Private Beta)
-
-```bash
-uv run fastapi deploy
-```
-
-### Docker
-
-```bash
-# Build image
-docker build -t bookmark-organizer-be .
-
-# Run container
-docker run -p 8000:8000 bookmark-organizer-be
-```
-
 ## API Endpoints
 
 - `GET /` - Health check endpoint
@@ -118,4 +123,3 @@ docker run -p 8000:8000 bookmark-organizer-be
 
 - [FastAPI Documentation](https://fastapi.tiangolo.com)
 - [uv Documentation](https://docs.astral.sh/uv/)
-- [FastAPI Cloud](https://fastapicloud.com)
