@@ -1,13 +1,27 @@
 from sqlalchemy import create_engine
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import sessionmaker, declarative_base
 from .config import settings
 
+DATABASE_URL = (
+    f"postgresql://{settings.database_user}:"
+    f"{settings.database_password}@"
+    f"{settings.database_hostname}:"
+    f"{settings.database_port}/"
+    f"{settings.database_name}"
+)
 
-SQLALCHEMY_DATABASE_URL = f"postgresql://{settings.database_user}:{settings.database_password}@{settings.database_hostname}:{settings.database_port}/{settings.database_name}"
+engine = create_engine(
+    DATABASE_URL,
+    pool_pre_ping=True,
+    pool_size=5,
+    max_overflow=10
+)
 
-engine = create_engine(SQLALCHEMY_DATABASE_URL)
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+SessionLocal = sessionmaker(
+    autocommit=False,
+    autoflush=False,
+    bind=engine
+)
 
 Base = declarative_base()
 
@@ -18,20 +32,3 @@ def get_db():
         yield db
     finally:
         db.close()
-
-# while(True):
-#     try:
-#         conn = psycopg2.connect(
-#             host="localhost",
-#             database="fastapi",
-#             user="postgres",
-#             password="password",
-#             cursor_factory=RealDictCursor,
-#         )
-#         cursor = conn.cursor()
-#         print("Database connection was successfull")
-#         break
-#     except Exception as error:
-#         print("Database connection was unsuccessfull")
-#         time.sleep(2)
-#         print("Error: ", error)

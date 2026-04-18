@@ -1,151 +1,123 @@
 from fastapi import APIRouter, Depends, status, HTTPException, Response
 from sqlalchemy.orm import Session
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+from uuid import UUID
 
-# Import database dependency and models
 from app.database import get_db
 from app.models import Folder as FolderModel, Bookmark as BookmarkModel
-from app.schemas import Folder, FolderResponse, BookmarkResponse
+from app.schemas import FolderCreate, FolderResponse, BookmarkResponse
+from app.utils.jwt import verify_access_token
 
-# Create API router for folder endpoints
-# Prefix: /v1/folders
-# Tags: folders (for API documentation)
+security = HTTPBearer()
+
 router = APIRouter(
     prefix="/v1/folders",
     tags=["folders"],
 )
 
+
+def get_current_user(
+    credentials: HTTPAuthorizationCredentials = Depends(security)
+):
+    payload = verify_access_token(credentials.credentials)
+    if not payload:
+        raise HTTPException(status_code=401, detail="Invalid or expired token")
+    return payload
+
+
 @router.get("/", response_model=list[FolderResponse])
-def get_folders(db: Session = Depends(get_db)):
-    """
-    Get all folders from the database.
-    
-    Args:
-        db: Database session dependency
-        
-    Returns:
-        List of all folders in the database
-    """
-    folders = db.query(FolderModel).all()
-    return folders
+def get_folders(user=Depends(get_current_user), db: Session = Depends(get_db)):
+    """Get all folders for current user."""
+    return db.query(FolderModel).filter(
+        FolderModel.user_id == user["user_id"]
+    ).all()
+
 
 @router.get("/{folder_id}", response_model=FolderResponse)
-def get_folder(folder_id: int, db: Session = Depends(get_db)):
-    """
-    Get a specific folder by ID.
-    
-    Args:
-        folder_id: The ID of the folder to retrieve
-        db: Database session dependency
-        
-    Returns:
-        The requested folder
-        
-    Raises:
-        HTTPException: If folder with given ID is not found
-    """
-    folder = db.query(FolderModel).filter(FolderModel.id == folder_id).first()
-    if folder is None:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"folder with id: {folder_id} not found",
-        )
+def get_folder(folder_id: UUID, user=Depends(get_current_user), db: Session = Depends(get_db)):
+    """Get folder by ID (user protected)."""
+
+    folder = db.query(FolderModel).filter(
+        FolderModel.id == folder_id,
+        FolderModel.user_id == user["user_id"]
+    ).first()
+
+    if not folder:
+        raise HTTPException(status_code=404, detail="Folder not found")
+
     return folder
 
-@router.get("/{folder_id}/bookmarks", response_model=list[BookmarkResponse])
-def get_folder_bookmarks(folder_id: int, db: Session = Depends(get_db)):
-    """
-    Get all bookmarks for a specific folder.
-    
-    Args:
-        folder_id: The ID of the folder to get bookmarks for
-        db: Database session dependency
-        
-    Returns:
-        List of all bookmarks in the specified folder
-        
-    Raises:
-        HTTPException: If folder with given ID is not found
-    """
-    # First check if the folder exists
-    folder = db.query(FolderModel).filter(FolderModel.id == folder_id).first()
-    if folder is None:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"folder with id: {folder_id} not found",
-        )
-    
-    # Get all bookmarks for this folder
-    bookmarks = db.query(BookmarkModel).filter(BookmarkModel.folder_id == folder_id).all()
-    return bookmarks
 
-@router.post("/", status_code=status.HTTP_201_CREATED, response_model=FolderResponse)
-def create_folder(folder: Folder, db: Session = Depends(get_db)):
-    """
-    Create a new folder in the database.
-    
-    Args:
-        folder: Folder data from request body
-        db: Database session dependency
-        
-    Returns:
-        The created folder with generated ID
-    """
-    db_folder = FolderModel(**folder.dict())
+@router.get("/{folder_id}/bookmarks", response_model=list[BookmarkResponse])
+def get_folder_bookmarks(folder_id: UUID, user=Depends(get_current_user), db: Session = Depends(get_db)):
+    """Get all bookmarks inside a folder."""
+
+    folder = db.query(FolderModel).filter(
+        FolderModel.id == folder_id,
+        FolderModel.user_id == user["user_id"]
+    ).first()
+
+    if not folder:
+        raise HTTPException(status_code=404, detail="Folder not found")
+
+    return db.query(BookmarkModel).filter(
+        BookmarkModel.folder_id == folder_id
+    ).all()
+
+
+@router.post("/", status_code=201, response_model=FolderResponse)
+def create_folder(folder: FolderCreate, user=Depends(get_current_user), db: Session = Depends(get_db)):
+    """Create a new folder."""
+
+    db_folder = FolderModel(
+        **folder.model_dump(),
+        user_id=user["user_id"]
+    )
+
     db.add(db_folder)
     db.commit()
     db.refresh(db_folder)
+
     return db_folder
 
-@router.put("/{folder_id}", response_model=FolderResponse)
-def update_folder(folder_id: int, folder: Folder, db: Session = Depends(get_db)):
-    """
-    Update an existing folder.
-    
-    Args:
-        folder_id: The ID of the folder to update
-        folder: Updated folder data from request body
-        db: Database session dependency
-        
-    Returns:
-        The updated folder
-        
-    Raises:
-        HTTPException: If folder with given ID is not found
-    """
-    update_query = db.query(FolderModel).filter(FolderModel.id == folder_id)
-    existing_folder = update_query.first()
-    if existing_folder is None:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"folder with id: {folder_id} not found",
-        )
-    update_query.update(folder.dict(), synchronize_session=False)
-    db.commit()
-    db.refresh(existing_folder)
-    return existing_folder
 
-@router.delete("/{folder_id}")
-def delete_folder(folder_id: int, db: Session = Depends(get_db)):
-    """
-    Delete a folder by ID.
-    
-    Args:
-        folder_id: The ID of the folder to delete
-        db: Database session dependency
-        
-    Returns:
-        Empty response with 204 No Content status
-        
-    Raises:
-        HTTPException: If folder with given ID is not found
-    """
-    folder_query = db.query(FolderModel).filter(FolderModel.id == folder_id)
-    folder = folder_query.first()
-    if folder is None:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"folder with id: {folder_id} not found",
-        )
-    folder_query.delete(synchronize_session=False)
+@router.put("/{folder_id}", response_model=FolderResponse)
+def update_folder(folder_id: UUID, folder: FolderCreate, user=Depends(get_current_user), db: Session = Depends(get_db)):
+    """Update folder (user protected)."""
+
+    query = db.query(FolderModel).filter(
+        FolderModel.id == folder_id,
+        FolderModel.user_id == user["user_id"]
+    )
+
+    existing = query.first()
+
+    if not existing:
+        raise HTTPException(status_code=404, detail="Folder not found")
+
+    query.update(folder.model_dump(exclude_unset=True), synchronize_session=False)
+
     db.commit()
-    return Response(status_code=status.HTTP_204_NO_CONTENT)
+    db.refresh(existing)
+
+    return existing
+
+
+@router.delete("/{folder_id}", status_code=204)
+def delete_folder(folder_id: UUID, user=Depends(get_current_user), db: Session = Depends(get_db)):
+    """Delete folder (user protected)."""
+
+    query = db.query(FolderModel).filter(
+        FolderModel.id == folder_id,
+        FolderModel.user_id == user["user_id"]
+    )
+
+    folder = query.first()
+
+    if not folder:
+        raise HTTPException(status_code=404, detail="Folder not found")
+
+    query.delete(synchronize_session=False)
+    db.commit()
+
+    return Response(status_code=204)

@@ -6,4 +6,7 @@ dependencies = [
     "fastapi[standard]>=0.135.3",
     "sqlalchemy>=2.0.0",
     "psycopg2-binary>=2.9.0",
+    "authlib>=1.6.0",
+    "python-jose>=3.3.0",
+    "passlib[bcrypt]>=1.7.4",
 ]
