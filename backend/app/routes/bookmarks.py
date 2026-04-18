@@ -163,3 +163,18 @@ def get_favorite_bookmarks(
     ).all()
 
     return bookmarks
+
+@router.get("/allbookmarks", response_model=list[BookmarkResponse])
+def get_all_bookmarks(
+    user=Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """Get all bookmarks for logged-in user."""
+
+    user_id = user["user_id"]
+
+    bookmarks = db.query(Bookmark).join(Folder).filter(
+        Folder.user_id == user_id
+    ).all()
+
+    return bookmarks

@@ -66,12 +66,14 @@ pip install -r requirements.txt
 Start the development server from the `backend` directory:
 
 ```bash
-# Using uv
-uv run fastapi dev
 
-# Or using pip
-fastapi dev main.py
+# To start the server
+python -m fastapi dev main.py
 ```
+
+> Note: The FastAPI app is defined in `app/main.py`; `backend/main.py` re-exports `app` so this command works from the project root.
+>
+> On some Windows setups, `uv run fastapi dev` may fail with a trampoline/canonicalization error. Use the `python -m fastapi` form instead.
 
 Open the backend in your browser at:
 
