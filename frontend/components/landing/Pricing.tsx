@@ -107,7 +107,7 @@ export default function Pricing() {
             {/* CTA */}
             <button
               className={cn(
-                "w-full py-3 rounded-lg font-semibold text-sm transition-all duration-150",
+                "w-full py-3 cursor-pointer rounded-lg font-semibold text-sm transition-all duration-150",
                 plan.popular
                   ? "bg-white text-neutral-900 hover:bg-neutral-100"
                   : "bg-neutral-900 dark:bg-neutral-700 text-white hover:bg-neutral-700 dark:hover:bg-neutral-600"

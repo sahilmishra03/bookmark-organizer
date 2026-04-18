@@ -21,10 +21,10 @@ export default function RecentBookmarkRow({ title, url, folder, time }: RecentBo
       variants={fadeUp}
       className="flex items-center justify-between px-5 py-3 cursor-pointer group hover:bg-neutral-50 dark:hover:bg-neutral-800/50 transition-colors"
     >
-      <div>
+      <div className="min-w-0">
         <LinkPreview
           url={`https://${url}`}
-          className="text-sm font-medium text-neutral-900 dark:text-neutral-100 hover:text-neutral-600 dark:hover:text-neutral-200 transition-colors"
+          className="text-sm font-medium text-neutral-900 dark:text-neutral-100 hover:text-neutral-600 dark:hover:text-neutral-200 transition-colors truncate block"
         >
           {title}
         </LinkPreview>

@@ -26,7 +26,7 @@ const container = {
 
 export default function DashboardPage() {
   return (
-    <div className="p-6 min-h-screen">
+    <div className="p-4 sm:p-6 min-h-screen">
       <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.35 }}>
         <h1 className="text-2xl font-bold text-neutral-900 dark:text-neutral-100 mb-1">Dashboard</h1>
         <p className="text-neutral-500 dark:text-neutral-400 text-sm mb-8">Overview of your bookmarks and folders</p>
@@ -36,7 +36,7 @@ export default function DashboardPage() {
         variants={container}
         initial="hidden"
         animate="show"
-        className="grid grid-cols-3 mb-8 rounded-xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 overflow-hidden"
+        className="grid grid-cols-1 sm:grid-cols-3 mb-8 rounded-xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 overflow-hidden"
       >
         {stats.map((stat, i) => (
           <StatCard key={stat.label} {...stat} index={i} />

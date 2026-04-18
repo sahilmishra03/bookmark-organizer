@@ -17,9 +17,10 @@ const navItems = [
 interface SidebarProps {
   isOpen: boolean
   setIsOpen: (v: boolean) => void
+  isMobile?: boolean
 }
 
-const Sidebar = ({ isOpen, setIsOpen }: SidebarProps) => {
+const Sidebar = ({ isOpen, setIsOpen, isMobile = false }: SidebarProps) => {
   const [hovering, setIsHovering] = useState(false)
   const { theme, setTheme } = useTheme()
   const [mounted, setMounted] = useState(false)
@@ -29,109 +30,129 @@ const Sidebar = ({ isOpen, setIsOpen }: SidebarProps) => {
   useEffect(() => setMounted(true), [])
 
   return (
-    <div
-      className="fixed left-0 top-0 h-screen z-50"
-      onMouseEnter={() => setIsHovering(true)}
-      onMouseLeave={() => setIsHovering(false)}
-    >
+    <>
       <AnimatePresence>
-        {hovering && (
+        {isMobile && isOpen && (
           <motion.div
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.8 }}
-            transition={{ duration: 0.15 }}
-            onClick={() => setIsOpen(!isOpen)}
-            className="h-6 w-6 flex justify-center items-center absolute z-[100] -right-3 top-4 bg-neutral-200 dark:bg-neutral-900 border border-neutral-400 dark:border-neutral-600 rounded-md text-neutral-600 hover:text-neutral-800 dark:text-neutral-400 dark:hover:text-neutral-100 cursor-pointer"
-          >
-            {isOpen ? <ArrowBigLeft size={16} /> : <ArrowBigRight size={16} />}
-          </motion.div>
+            key="backdrop"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setIsOpen(false)}
+            className="fixed inset-0 bg-black/30 z-40"
+          />
         )}
       </AnimatePresence>
 
-      <motion.div
-        initial={{ width: "220px" }}
-        animate={{ width: isOpen ? "220px" : "50px" }}
-        transition={{ duration: 0.3, ease: "easeInOut" }}
-        className="h-full bg-white dark:bg-neutral-950 border-r border-dashed border-neutral-200 dark:border-neutral-700 overflow-hidden flex flex-col justify-between"
+      <div
+        className="fixed left-0 top-0 h-screen z-50"
+        onMouseEnter={() => !isMobile && setIsHovering(true)}
+        onMouseLeave={() => !isMobile && setIsHovering(false)}
       >
-        <div>
-          <div className="flex items-center gap-3 px-[14px] py-4 border-b border-dashed border-neutral-200 dark:border-neutral-700">
-            <img
-              src="bookmark.png"
-              alt="logo"
-              width={30}
-              height={30}
-            />
+        <AnimatePresence>
+          {hovering && !isMobile && (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.8 }}
+              transition={{ duration: 0.15 }}
+              onClick={() => setIsOpen(!isOpen)}
+              className="h-6 w-6 flex justify-center items-center absolute z-[100] -right-3 top-4 bg-neutral-200 dark:bg-neutral-900 border border-neutral-400 dark:border-neutral-600 rounded-md text-neutral-600 hover:text-neutral-800 dark:text-neutral-400 dark:hover:text-neutral-100 cursor-pointer"
+            >
+              {isOpen ? <ArrowBigLeft size={16} /> : <ArrowBigRight size={16} />}
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        <motion.div
+          initial={isMobile ? { x: "-100%" } : { width: "220px" }}
+          animate={
+            isMobile
+              ? { x: isOpen ? "0%" : "-100%" }
+              : { width: isOpen ? "220px" : "50px" }
+          }
+          transition={{ duration: 0.3, ease: "easeInOut" }}
+          style={isMobile ? { width: "220px" } : undefined}
+          className="h-full bg-white dark:bg-neutral-950 border-r border-dashed border-neutral-200 dark:border-neutral-700 overflow-hidden flex flex-col justify-between"
+        >
+          <div>
+            <div className="flex items-center gap-3 px-[14px] py-4 border-b border-dashed border-neutral-200 dark:border-neutral-700">
+              <img
+                src="bookmark.png"
+                alt="logo"
+                width={30}
+                height={30}
+              />
+              <AnimatePresence>
+                {(isOpen || isMobile) && (
+                  <motion.span
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.15 }}
+                    className="text-neutral-900  dark:text-neutral-100 font-semibold text-sm whitespace-nowrap"
+                  >
+                    Bookmark
+                  </motion.span>
+                )}
+              </AnimatePresence>
+            </div>
+
+            <nav className="flex flex-col gap-1 px-2 py-4">
+              {navItems.map(({ icon: Icon, label, href }) => {
+                const active = href === "/home" ? pathname === "/home" : pathname.startsWith(href.split("?")[0])
+                return (
+                  <div
+                    key={label}
+                    onClick={() => { router.push(href); if (isMobile) setIsOpen(false) }}
+                    className={`flex items-center gap-3 px-2 py-2 rounded-md cursor-pointer transition-colors
+                      ${active
+                        ? "bg-neutral-800 text-white dark:bg-neutral-200 dark:text-neutral-900"
+                        : "text-neutral-500 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-800 hover:text-neutral-900 dark:hover:text-neutral-100"
+                      }`}
+                  >
+                    <Icon size={18} className="shrink-0" />
+                    <AnimatePresence>
+                      {(isOpen || isMobile) && (
+                        <motion.span
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                          exit={{ opacity: 0 }}
+                          transition={{ duration: 0.15 }}
+                          className="whitespace-nowrap text-sm font-medium"
+                        >
+                          {label}
+                        </motion.span>
+                      )}
+                    </AnimatePresence>
+                  </div>
+                )
+              })}
+            </nav>
+          </div>
+
+          <button
+            onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+            className="flex cursor-pointer items-center gap-2 px-[14px] p-4 text-neutral-600 dark:text-neutral-300 text-sm font-medium hover:bg-neutral-100 dark:hover:bg-neutral-900"
+          >
+            {mounted ? (theme === "dark" ? <Sun size={16} className="shrink-0" /> : <Moon size={16} className="shrink-0" />) : <Moon size={16} className="shrink-0" />}
             <AnimatePresence>
-              {isOpen && (
+              {(isOpen || isMobile) && (
                 <motion.span
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
                   transition={{ duration: 0.15 }}
-                  className="text-neutral-900 dark:text-neutral-100 font-semibold text-sm whitespace-nowrap"
+                  className="whitespace-nowrap"
                 >
-                  Bookmark
+                  {mounted ? (theme === "dark" ? "Light mode" : "Dark mode") : "Dark mode"}
                 </motion.span>
               )}
             </AnimatePresence>
-          </div>
-
-          <nav className="flex flex-col gap-1 px-2 py-4">
-            {navItems.map(({ icon: Icon, label, href }) => {
-              const active = href === "/home" ? pathname === "/home" : pathname.startsWith(href.split("?")[0])
-              return (
-                <div
-                  key={label}
-                  onClick={() => router.push(href)}
-                  className={`flex items-center gap-3 px-2 py-2 rounded-md cursor-pointer transition-colors
-                    ${active
-                      ? "bg-neutral-800 text-white dark:bg-neutral-200 dark:text-neutral-900"
-                      : "text-neutral-500 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-800 hover:text-neutral-900 dark:hover:text-neutral-100"
-                    }`}
-                >
-                  <Icon size={18} className="shrink-0" />
-                  <AnimatePresence>
-                    {isOpen && (
-                      <motion.span
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        transition={{ duration: 0.15 }}
-                        className="whitespace-nowrap text-sm font-medium"
-                      >
-                        {label}
-                      </motion.span>
-                    )}
-                  </AnimatePresence>
-                </div>
-              )
-            })}
-          </nav>
-        </div>
-
-        <button
-          onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-          className="flex cursor-pointer items-center gap-2 px-[14px] p-4 text-neutral-600 dark:text-neutral-300 text-sm font-medium hover:bg-neutral-100 dark:hover:bg-neutral-900"
-        >
-          {mounted ? (theme === "dark" ? <Sun size={16} className="shrink-0" /> : <Moon size={16} className="shrink-0" />) : <Moon size={16} className="shrink-0" />}
-          <AnimatePresence>
-            {isOpen && (
-              <motion.span
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.15 }}
-                className="whitespace-nowrap"
-              >
-                {mounted ? (theme === "dark" ? "Light mode" : "Dark mode") : "Dark mode"}
-              </motion.span>
-            )}
-          </AnimatePresence>
-        </button>
-      </motion.div>
-    </div>
+          </button>
+        </motion.div>
+      </div>
+    </>
   )
 }
 
