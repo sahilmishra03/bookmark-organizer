@@ -1,7 +1,7 @@
 import React from 'react'
-import LoginHeader from './components/LoginHeader'
-import SocialLogins from './components/SocialLogins'
-import EmailLoginForm from './components/EmailLoginForm'
+import LoginHeader from '../../components/login/LoginHeader'
+import SocialLogins from '../../components/login/SocialLogins'
+import EmailLoginForm from '../../components/login/EmailLoginForm'
 
 const page = () => {
     return (
