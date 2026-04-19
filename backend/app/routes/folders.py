@@ -25,7 +25,7 @@ def get_current_user(
     return payload
 
 
-@router.get("/", response_model=list[FolderResponse])
+@router.get("", response_model=list[FolderResponse])
 def get_folders(user=Depends(get_current_user), db: Session = Depends(get_db)):
     """Get all folders for current user."""
     return db.query(FolderModel).filter(
@@ -65,7 +65,7 @@ def get_folder_bookmarks(folder_id: UUID, user=Depends(get_current_user), db: Se
     ).all()
 
 
-@router.post("/", status_code=201, response_model=FolderResponse)
+@router.post("", status_code=201, response_model=FolderResponse)
 def create_folder(folder: FolderCreate, user=Depends(get_current_user), db: Session = Depends(get_db)):
     """Create a new folder."""
 

@@ -19,7 +19,7 @@ export default function RecentBookmarkRow({ title, url, folder, time }: RecentBo
   return (
     <motion.div
       variants={fadeUp}
-      className="flex items-center justify-between px-5 py-3 cursor-pointer group hover:bg-neutral-50 dark:hover:bg-neutral-800/50 transition-colors"
+      className="flex items-center justify-between px-5 py-3 rounded-b-lg cursor-pointer group hover:bg-neutral-50 dark:hover:bg-neutral-800/50 transition-colors"
     >
       <div className="min-w-0">
         <LinkPreview

@@ -1,23 +1,13 @@
 "use client"
 
+import { useEffect, useState } from "react"
 import { motion } from "framer-motion"
 import { Bookmark, Folder, Star } from "lucide-react"
 import StatCard from "@/components/home/dashboard/StatCard"
 import RecentBookmarkRow from "@/components/home/dashboard/RecentBookmarkRow"
-
-const stats = [
-  { label: "Total Bookmarks", value: 24, icon: Bookmark, color: "text-neutral-600 dark:text-neutral-300", trend: [8, 10, 9, 13, 15, 18, 20, 24] },
-  { label: "Folders", value: 6, icon: Folder, color: "text-neutral-600 dark:text-neutral-300", trend: [2, 2, 3, 3, 4, 4, 5, 6] },
-  { label: "Favorites", value: 8, icon: Star, color: "text-neutral-600 dark:text-neutral-300", trend: [3, 3, 4, 5, 5, 6, 7, 8] },
-]
-
-const recent = [
-  { title: "Next.js App Router Docs", url: "nextjs.org/docs", folder: "Dev", time: "2h ago" },
-  { title: "Tailwind CSS v4 Release", url: "tailwindcss.com/blog", folder: "Design", time: "5h ago" },
-  { title: "Framer Motion Examples", url: "framer.com/motion", folder: "Dev", time: "1d ago" },
-  { title: "Linear — Project Management", url: "linear.app", folder: "Tools", time: "2d ago" },
-  { title: "Vercel Dashboard", url: "vercel.com/dashboard", folder: "Dev", time: "3d ago" },
-]
+import api from "@/lib/api"
+import { buildTrend, timeAgo, stripProtocol } from "@/lib/timeUtils"
+import type { Bookmark as BookmarkType, Folder as FolderType } from "@/lib/types"
 
 const container = {
   hidden: {},
@@ -25,6 +15,47 @@ const container = {
 }
 
 export default function DashboardPage() {
+  const [bookmarks, setBookmarks] = useState<BookmarkType[]>([])
+  const [folders, setFolders] = useState<FolderType[]>([])
+  const [favorites, setFavorites] = useState<BookmarkType[]>([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    Promise.all([
+      api.get<BookmarkType[]>("/v1/bookmarks/allbookmarks"),
+      api.get<FolderType[]>("/v1/folders"),
+      api.get<BookmarkType[]>("/v1/bookmarks/favorites"),
+    ]).then(([bRes, fRes, favRes]) => {
+      setBookmarks(bRes.data)
+      setFolders(fRes.data)
+      setFavorites(favRes.data)
+    }).finally(() => setLoading(false))
+  }, [])
+
+  const folderMap = Object.fromEntries(folders.map(f => [f.id, f.name]))
+
+  const stats = [
+    {
+      label: "Total Bookmarks", value: bookmarks.length, icon: Bookmark,
+      color: "text-neutral-600 dark:text-neutral-300",
+      trend: buildTrend(bookmarks.map(b => b.created_at)),
+    },
+    {
+      label: "Folders", value: folders.length, icon: Folder,
+      color: "text-neutral-600 dark:text-neutral-300",
+      trend: buildTrend(folders.map(f => f.created_at)),
+    },
+    {
+      label: "Favorites", value: favorites.length, icon: Star,
+      color: "text-neutral-600 dark:text-neutral-300",
+      trend: buildTrend(favorites.map(b => b.created_at)),
+    },
+  ]
+
+  const recent = [...bookmarks]
+    .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+    .slice(0, 5)
+
   return (
     <div className="p-4 sm:p-6 min-h-screen">
       <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.35 }}>
@@ -52,11 +83,23 @@ export default function DashboardPage() {
         <p className="text-sm font-medium text-neutral-700 dark:text-neutral-300 px-5 py-4 border-b border-neutral-200 dark:border-neutral-800">
           Recent Bookmarks
         </p>
-        <motion.div variants={container} initial="hidden" animate="show" className="divide-y divide-neutral-100 dark:divide-neutral-800">
-          {recent.map((b) => (
-            <RecentBookmarkRow key={b.title} {...b} />
-          ))}
-        </motion.div>
+        {loading ? (
+          <p className="text-sm text-neutral-400 px-5 py-8 text-center">Loading…</p>
+        ) : recent.length === 0 ? (
+          <p className="text-sm text-neutral-400 px-5 py-8 text-center">No bookmarks yet</p>
+        ) : (
+          <motion.div variants={container} initial="hidden" animate="show" className="divide-y divide-neutral-100 dark:divide-neutral-800">
+            {recent.map((b) => (
+              <RecentBookmarkRow
+                key={b.id}
+                title={b.title}
+                url={stripProtocol(b.url)}
+                folder={folderMap[b.folder_id] ?? "—"}
+                time={timeAgo(b.created_at)}
+              />
+            ))}
+          </motion.div>
+        )}
       </motion.div>
     </div>
   )

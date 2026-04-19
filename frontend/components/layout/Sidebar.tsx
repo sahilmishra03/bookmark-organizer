@@ -12,7 +12,6 @@ const navItems = [
   { icon: Folder,   label: "Folders",    href: "/home/folders" },
   { icon: Star,     label: "Favorites",  href: "/home/favorites" },
   { icon: Search,   label: "Search",     href: "/home/search" },
-  { icon: Settings, label: "Settings",   href: "/home/settings" },
 ]
 
 interface SidebarProps {
