@@ -19,7 +19,7 @@ A FastAPI backend service for the Bookmark Organizer application.
 1. Clone the repository:
 
 ```bash
-git clone <repository-url>
+git clone https://github.com/sahilmishra03/bookmark-organizer
 ```
 
 2. Change into the backend folder:
