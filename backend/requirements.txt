@@ -161,3 +161,5 @@ watchfiles==1.1.1
     # via uvicorn
 websockets==16.0
     # via uvicorn
+itsdangerous==2.2.0
+    # via starlette

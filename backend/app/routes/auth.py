@@ -1,10 +1,12 @@
 from fastapi import APIRouter, Depends, Request, HTTPException
+from fastapi.responses import RedirectResponse
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from sqlalchemy.orm import Session
 from authlib.integrations.starlette_client import OAuth
 from jose import jwt, JWTError
 import hashlib
 import uuid
+import urllib.parse
 
 from ..database import get_db
 from .. import models
@@ -89,30 +91,18 @@ async def auth_callback(request: Request, db: Session = Depends(get_db)):
         db.add(db_token)
         db.commit()
 
-        return {
-            "message": "Login successful",
+        params = urllib.parse.urlencode({
             "access_token": access_token,
             "refresh_token": refresh_token,
-            "token_type": "bearer",
-            "user": {
-                "email": user.email,
-                "name": user.name
-            }
-        }
+            "name": user.name or "",
+            "email": user.email,
+        })
+        return RedirectResponse(url=f"http://localhost:3000/auth/callback?{params}")
 
     except Exception as e:
-        import traceback
-
         if "mismatching_state" in str(e):
-            return {
-                "error": "Session expired. Try login again.",
-                "fix": "Open /login/google in browser (no refresh)"
-            }
-
-        return {
-            "error": str(e),
-            "trace": traceback.format_exc()
-        }
+            return RedirectResponse(url="http://localhost:3000/login?error=session_expired")
+        return RedirectResponse(url="http://localhost:3000/login?error=auth_failed")
 
 
 security = HTTPBearer()

@@ -1,6 +1,7 @@
 "use client"
 
 import Sidebar from "@/components/layout/Sidebar"
+import AuthGuard from "@/components/AuthGuard"
 import { motion } from "framer-motion"
 import { useState, useEffect } from "react"
 import { Menu } from "lucide-react"
@@ -21,7 +22,7 @@ export default function HomeLayout({ children }: { children: React.ReactNode }) 
   }, [])
 
   return (
-    <>
+    <AuthGuard>
       <Sidebar isOpen={isOpen} setIsOpen={setIsOpen} isMobile={isMobile} />
 
       {isMobile && !isOpen && (
@@ -41,6 +42,6 @@ export default function HomeLayout({ children }: { children: React.ReactNode }) 
       >
         {children}
       </motion.main>
-    </>
+    </AuthGuard>
   )
 }

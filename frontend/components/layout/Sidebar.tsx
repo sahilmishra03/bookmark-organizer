@@ -4,6 +4,7 @@ import { ArrowBigLeft, ArrowBigRight, BookmarkIcon, Home, Settings, Folder, Star
 import { useTheme } from "next-themes"
 import { useState, useEffect } from "react"
 import { usePathname, useRouter } from "next/navigation"
+import { useAuthStore } from "@/store/authStore"
 
 const navItems = [
   { icon: Home,         label: "Dashboard",  href: "/home" },
@@ -26,6 +27,7 @@ const Sidebar = ({ isOpen, setIsOpen, isMobile = false }: SidebarProps) => {
   const [mounted, setMounted] = useState(false)
   const pathname = usePathname()
   const router = useRouter()
+  const user = useAuthStore((s) => s.user)
 
   useEffect(() => setMounted(true), [])
 
@@ -131,25 +133,56 @@ const Sidebar = ({ isOpen, setIsOpen, isMobile = false }: SidebarProps) => {
             </nav>
           </div>
 
-          <button
-            onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-            className="flex cursor-pointer items-center gap-2 px-[14px] p-4 text-neutral-600 dark:text-neutral-300 text-sm font-medium hover:bg-neutral-100 dark:hover:bg-neutral-900"
-          >
-            {mounted ? (theme === "dark" ? <Sun size={16} className="shrink-0" /> : <Moon size={16} className="shrink-0" />) : <Moon size={16} className="shrink-0" />}
-            <AnimatePresence>
-              {(isOpen || isMobile) && (
-                <motion.span
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  transition={{ duration: 0.15 }}
-                  className="whitespace-nowrap"
-                >
-                  {mounted ? (theme === "dark" ? "Light mode" : "Dark mode") : "Dark mode"}
-                </motion.span>
-              )}
-            </AnimatePresence>
-          </button>
+          <div>
+            <div
+              onClick={() => { router.push('/home/profile'); if (isMobile) setIsOpen(false) }}
+              className="flex items-center gap-3 px-[14px] py-3 cursor-pointer hover:bg-neutral-100 dark:hover:bg-neutral-900 border-t border-dashed border-neutral-200 dark:border-neutral-700"
+            >
+              <div className="h-7 w-7 rounded-full bg-neutral-800 dark:bg-neutral-200 flex items-center justify-center shrink-0">
+                <span className="text-xs font-semibold text-white dark:text-neutral-900">
+                  {user?.name ? user.name[0].toUpperCase() : '?'}
+                </span>
+              </div>
+              <AnimatePresence>
+                {(isOpen || isMobile) && (
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.15 }}
+                    className="flex flex-col min-w-0"
+                  >
+                    <span className="text-sm font-medium text-neutral-900 dark:text-neutral-100 truncate whitespace-nowrap">
+                      {user?.name || 'Profile'}
+                    </span>
+                    <span className="text-xs text-neutral-500 dark:text-neutral-400 truncate whitespace-nowrap">
+                      {user?.email || 'View profile'}
+                    </span>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+
+            <button
+              onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+              className="w-full flex cursor-pointer items-center gap-2 px-[14px] p-4 text-neutral-600 dark:text-neutral-300 text-sm font-medium hover:bg-neutral-100 dark:hover:bg-neutral-900"
+            >
+              {mounted ? (theme === "dark" ? <Sun size={16} className="shrink-0" /> : <Moon size={16} className="shrink-0" />) : <Moon size={16} className="shrink-0" />}
+              <AnimatePresence>
+                {(isOpen || isMobile) && (
+                  <motion.span
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.15 }}
+                    className="whitespace-nowrap"
+                  >
+                    {mounted ? (theme === "dark" ? "Light mode" : "Dark mode") : "Dark mode"}
+                  </motion.span>
+                )}
+              </AnimatePresence>
+            </button>
+          </div>
         </motion.div>
       </div>
     </>
