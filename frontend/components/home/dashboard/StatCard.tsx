@@ -104,7 +104,7 @@ export default function StatCard({ label, value, icon: Icon, color, index, trend
   return (
     <motion.div
       variants={fadeUp}
-      className={`p-5 flex flex-col gap-4 ${index !== 2 ? "border-r border-neutral-200 dark:border-neutral-800" : ""}`}
+      className={`p-5 flex flex-col gap-4 ${index !== 2 ? "border-b sm:border-b-0 sm:border-r border-neutral-200 dark:border-neutral-800" : ""}`}
     >
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
