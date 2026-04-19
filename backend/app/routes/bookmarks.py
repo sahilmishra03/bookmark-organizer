@@ -5,7 +5,7 @@ from uuid import UUID
 
 from app.database import get_db
 from app.models import Bookmark, Folder
-from app.schemas import BookmarkCreate as BookmarkSchema, BookmarkResponse
+from app.schemas import BookmarkCreate as BookmarkSchema, BookmarkPut, BookmarkResponse
 from app.utils.jwt import verify_access_token
 
 security = HTTPBearer()
@@ -50,7 +50,7 @@ def create_bookmark(
 
     new_bookmark = Bookmark(
         title=bookmark.title,
-        url=bookmark.url,
+        url=str(bookmark.url),
         description=bookmark.description,
         favorite=bookmark.favorite,
         folder_id=folder_id
@@ -70,7 +70,7 @@ def create_bookmark(
 def update_bookmark(
     folder_id: UUID,
     bookmark_id: UUID,
-    bookmark: BookmarkSchema = Body(...),
+    bookmark: BookmarkPut = Body(...),
     user=Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
@@ -87,18 +87,24 @@ def update_bookmark(
     if not folder:
         raise HTTPException(status_code=404, detail="Folder not found")
 
-    query = db.query(Bookmark).join(Folder).filter(
+    # Validate bookmark exists and user owns it
+    existing = db.query(Bookmark).join(Folder).filter(
         Bookmark.id == bookmark_id,
         Bookmark.folder_id == folder_id,
         Folder.user_id == user_id
-    )
-
-    existing = query.first()
+    ).first()
 
     if not existing:
         raise HTTPException(status_code=404, detail="Bookmark not found")
 
-    query.update(bookmark.model_dump(exclude_unset=True), synchronize_session=False)
+    # Update the bookmark using a separate query without join
+    update_data = bookmark.model_dump()
+    if 'url' in update_data:
+        update_data['url'] = str(update_data['url'])
+    
+    db.query(Bookmark).filter(Bookmark.id == bookmark_id).update(
+        update_data, synchronize_session=False
+    )
 
     db.commit()
     db.refresh(existing)
@@ -128,18 +134,18 @@ def delete_bookmark(
     if not folder:
         raise HTTPException(status_code=404, detail="Folder not found")
 
-    query = db.query(Bookmark).join(Folder).filter(
+    bookmark = db.query(Bookmark).join(Folder).filter(
         Bookmark.id == bookmark_id,
         Bookmark.folder_id == folder_id,
         Folder.user_id == user_id
-    )
-
-    bookmark = query.first()
+    ).first()
 
     if not bookmark:
         raise HTTPException(status_code=404, detail="Bookmark not found")
 
-    query.delete(synchronize_session=False)
+    db.query(Bookmark).filter(Bookmark.id == bookmark_id).delete(
+        synchronize_session=False
+    )
     db.commit()
 
     return Response(status_code=status.HTTP_204_NO_CONTENT)
