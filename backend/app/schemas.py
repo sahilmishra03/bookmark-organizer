@@ -1,5 +1,5 @@
-from pydantic import BaseModel, HttpUrl, Field
-from typing import Optional
+from pydantic import BaseModel, HttpUrl, Field, field_validator
+from typing import Optional, Union
 from datetime import datetime
 from uuid import UUID
 
@@ -29,6 +29,20 @@ class BookmarkBase(BaseModel):
 
 class BookmarkCreate(BookmarkBase):
     folder_id: UUID
+
+
+class BookmarkPut(BaseModel):
+    title: str = Field(..., min_length=1, max_length=200)
+    url: HttpUrl
+    description: Optional[str] = None
+    favorite: bool = False
+
+
+class BookmarkUpdate(BaseModel):
+    title: Optional[str] = Field(None, min_length=1, max_length=200)
+    url: Optional[HttpUrl] = None
+    description: Optional[str] = None
+    favorite: Optional[bool] = None
 
 
 class BookmarkResponse(BookmarkBase):
