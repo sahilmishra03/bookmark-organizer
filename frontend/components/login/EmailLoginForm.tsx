@@ -15,6 +15,7 @@ const EmailLoginForm = () => {
                         onChange={(e)=>{setEmail(e.target.value)}}
                         className='bg-neutral-100 text-neutral-800 dark:text-neutral-200 placeholder:text-neutral-800 dark:placeholder:text-neutral-200 dark:bg-neutral-800 h-12 w-84 md:w-128 pl-2 rounded-[10px] focus:outline-none focus:ring-2 focus:ring-neutral-300 dark:focus:ring-neutral-700'
                         placeholder='Enter your email'
+                        suppressHydrationWarning={true}
                     />
                 </div>
                 <button

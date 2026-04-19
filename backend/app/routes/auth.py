@@ -28,11 +28,26 @@ google = oauth.register(
     }
 )
 
+github = oauth.register(
+    name="github",
+    client_id=settings.github_client_id,
+    client_secret=settings.github_client_secret,
+    authorize_url=settings.github_authorize_url,
+    access_token_url=settings.github_access_token_url,
+    client_kwargs={
+        "scope": "user:email"
+    }
+)
+
 @router.get("/login/google")
 async def login(request: Request):
     redirect_uri = "http://localhost:8000/auth/callback/google"
     return await google.authorize_redirect(request, redirect_uri)
 
+@router.get("/login/github")
+async def login_github(request: Request):
+    redirect_uri = "http://localhost:8000/auth/callback/github"
+    return await github.authorize_redirect(request, redirect_uri)
 
 @router.get("/auth/callback/google")
 async def auth_callback(request: Request, db: Session = Depends(get_db)):
@@ -64,6 +79,79 @@ async def auth_callback(request: Request, db: Session = Depends(get_db)):
         else:
             existing_user.name = user_info.get("name")
             existing_user.profile_picture = user_info.get("picture")
+            db.commit()
+            user = existing_user
+
+        access_token = create_access_token({
+            "user_id": str(user.id),
+            "email": user.email
+        })
+
+        refresh_token = create_refresh_token({
+            "user_id": str(user.id)
+        })
+
+        hashed_token = hashlib.sha256(refresh_token.encode()).hexdigest()
+
+        db.query(models.RefreshToken).filter(
+            models.RefreshToken.user_id == user.id,
+            models.RefreshToken.is_revoked == False
+        ).update({"is_revoked": True})
+        db.commit()
+
+        db_token = models.RefreshToken(
+            user_id=user.id,
+            token=hashed_token
+        )
+        db.add(db_token)
+        db.commit()
+
+        params = urllib.parse.urlencode({
+            "access_token": access_token,
+            "refresh_token": refresh_token,
+            "name": user.name or "",
+            "email": user.email,
+        })
+        return RedirectResponse(url=f"http://localhost:3000/auth/callback?{params}")
+
+    except Exception as e:
+        if "mismatching_state" in str(e):
+            return RedirectResponse(url="http://localhost:3000/login?error=session_expired")
+        return RedirectResponse(url="http://localhost:3000/login?error=auth_failed")
+
+
+@router.get("/auth/callback/github")
+async def auth_callback_github(request: Request, db: Session = Depends(get_db)):
+    try:
+        token = await github.authorize_access_token(request)
+        
+        resp = await github.get(settings.github_userinfo_endpoint, token=token)
+        user_info = resp.json()
+        
+        # Get user email if not provided in main user info
+        if not user_info.get("email"):
+            emails_resp = await github.get("https://api.github.com/user/emails", token=token)
+            emails = emails_resp.json()
+            primary_email = next((email for email in emails if email["primary"]), None)
+            if primary_email:
+                user_info["email"] = primary_email["email"]
+        
+        existing_user = db.query(models.User).filter(
+            models.User.email == user_info["email"]
+        ).first()
+
+        if not existing_user:
+            user = models.User(
+                email=user_info["email"],
+                name=user_info.get("name") or user_info.get("login"),
+                profile_picture=user_info.get("avatar_url")
+            )
+            db.add(user)
+            db.commit()
+            db.refresh(user)
+        else:
+            existing_user.name = user_info.get("name") or user_info.get("login")
+            existing_user.profile_picture = user_info.get("avatar_url")
             db.commit()
             user = existing_user
 
