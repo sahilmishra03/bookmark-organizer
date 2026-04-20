@@ -11,8 +11,8 @@ const Hero = () => {
             </h1>
             <p className="text-neutral-400 max-w-lg text-base md:text-lg tracking-wide">Your bookmarks, synced across every device the moment you save them. No more lost links, no more digging through browser folders.</p>
             <div className="flex flex-wrap gap-4 items-center">
-                <Link href={"#"} className="bg-neutral-900 px-3 py-2  text-white dark:bg-neutral-200  hover:bg-neutral-700 dark:text-black dark:hover:bg-neutral-300 transition-all ease-in duration-150 rounded text-shadow-2xs drop-shadow-2xl drop-shadow-neutral-500 dark:drop-shadow-neutral-700" >Get started free</Link>
-                <Link href={"#"} className="hover:bg-neutral-200 dark:hover:bg-neutral-800 px-3 py-2 transition-all ease-in duration-150  rounded">See how it works</Link>
+                <Link href={"/login"} className="bg-neutral-900 px-3 py-2  text-white dark:bg-neutral-200  hover:bg-neutral-700 dark:text-black dark:hover:bg-neutral-300 transition-all ease-in duration-150 rounded text-shadow-2xs drop-shadow-2xl drop-shadow-neutral-500 dark:drop-shadow-neutral-700" >Get started free</Link>
+                <Link href={"#features"} className="hover:bg-neutral-200 dark:hover:bg-neutral-800 px-3 py-2 transition-all ease-in duration-150  rounded">See how it works</Link>
             </div>
 
             <HeroImages />

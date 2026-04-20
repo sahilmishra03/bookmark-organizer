@@ -11,7 +11,7 @@ export default function CTA() {
         Join thousands of people who use Boomarki to save, organise, and access their bookmarks everywhere.
       </p>
       <div className="flex flex-wrap gap-4 items-center justify-center">
-        <Link href="#" className="bg-neutral-900 px-5 py-2.5 text-white dark:bg-neutral-200 hover:bg-neutral-700 dark:text-black dark:hover:bg-neutral-300 transition-all ease-in duration-150 rounded font-medium">
+        <Link href="/login" className="bg-neutral-900 px-5 py-2.5 text-white dark:bg-neutral-200 hover:bg-neutral-700 dark:text-black dark:hover:bg-neutral-300 transition-all ease-in duration-150 rounded font-medium">
           Get started free
         </Link>
         <Link href="#pricing" className="hover:bg-neutral-200 dark:hover:bg-neutral-800 px-5 py-2.5 transition-all ease-in duration-150 rounded">

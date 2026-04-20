@@ -19,6 +19,8 @@ export default function FolderDetailPage() {
   const [editTarget, setEditTarget] = useState<Bookmark | null>(null)
   const [editForm, setEditForm] = useState<EditForm>({ title: "", url: "", description: "", favorite: false })
   const [saving, setSaving] = useState(false)
+  const [showAddModal, setShowAddModal] = useState(false)
+  const [addForm, setAddForm] = useState({ title: "", url: "", description: "" })
 
   useEffect(() => {
     Promise.all([
@@ -41,6 +43,22 @@ export default function FolderDetailPage() {
       { title: b.title, url: b.url, description: b.description, favorite: !b.favorite }
     )
     setBookmarks(prev => prev.map(x => x.id === b.id ? data : x))
+  }
+
+  const handleAdd = async () => {
+    if (!addForm.title.trim() || !addForm.url.trim()) return
+    setSaving(true)
+    try {
+      const { data } = await api.post<Bookmark>(
+        `/v1/bookmarks/folders/${id}/bookmarks`,
+        { title: addForm.title, url: addForm.url, description: addForm.description || null, favorite: false, folder_id: id }
+      )
+      setBookmarks(prev => [data, ...prev])
+      setShowAddModal(false)
+      setAddForm({ title: "", url: "", description: "" })
+    } finally {
+      setSaving(false)
+    }
   }
 
   const openEdit = (b: Bookmark) => {
@@ -73,13 +91,21 @@ export default function FolderDetailPage() {
         Back to Folders
       </button>
 
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold text-neutral-900 dark:text-neutral-100 mb-1">
-          {loading ? "Loading…" : (folder?.name ?? "Folder")}
-        </h1>
-        <p className="text-neutral-500 dark:text-neutral-400 text-sm">
-          {bookmarks.length} bookmark{bookmarks.length !== 1 ? "s" : ""}
-        </p>
+      <div className="flex items-center justify-between mb-6">
+        <div>
+          <h1 className="text-2xl font-bold text-neutral-900 dark:text-neutral-100 mb-1">
+            {loading ? "Loading…" : (folder?.name ?? "Folder")}
+          </h1>
+          <p className="text-neutral-500 dark:text-neutral-400 text-sm">
+            {bookmarks.length} bookmark{bookmarks.length !== 1 ? "s" : ""}
+          </p>
+        </div>
+        <button
+          onClick={() => setShowAddModal(true)}
+          className="px-4 py-2 rounded-lg bg-neutral-900 dark:bg-neutral-100 hover:opacity-90 text-white dark:text-neutral-900 text-sm font-medium transition-opacity"
+        >
+          + Add Bookmark
+        </button>
       </div>
 
       {loading ? (
@@ -101,6 +127,48 @@ export default function FolderDetailPage() {
               onToggleFavorite={() => handleToggleFavorite(b)}
             />
           ))}
+        </div>
+      )}
+
+      {showAddModal && (
+        <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center p-4">
+          <div className="bg-white dark:bg-neutral-900 rounded-xl border border-neutral-200 dark:border-neutral-800 w-full max-w-md p-6">
+            <h2 className="text-base font-semibold text-neutral-900 dark:text-neutral-100 mb-4">Add Bookmark</h2>
+            <div className="flex flex-col gap-3">
+              <input
+                autoFocus
+                placeholder="Title *"
+                value={addForm.title}
+                onChange={e => setAddForm(f => ({ ...f, title: e.target.value }))}
+                className="px-3 py-2 rounded-lg border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-sm outline-none focus:ring-2 focus:ring-neutral-400 text-neutral-900 dark:text-neutral-100 placeholder:text-neutral-400"
+              />
+              <input
+                placeholder="URL * (https://...)"
+                value={addForm.url}
+                onChange={e => setAddForm(f => ({ ...f, url: e.target.value }))}
+                className="px-3 py-2 rounded-lg border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-sm outline-none focus:ring-2 focus:ring-neutral-400 text-neutral-900 dark:text-neutral-100 placeholder:text-neutral-400"
+              />
+              <div className="px-3 py-2 rounded-lg border border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 text-sm text-neutral-500 dark:text-neutral-400">
+                Folder: {folder?.name ?? "This folder"}
+              </div>
+              <input
+                placeholder="Description (optional)"
+                value={addForm.description}
+                onChange={e => setAddForm(f => ({ ...f, description: e.target.value }))}
+                className="px-3 py-2 rounded-lg border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-sm outline-none focus:ring-2 focus:ring-neutral-400 text-neutral-900 dark:text-neutral-100 placeholder:text-neutral-400"
+              />
+            </div>
+            <div className="flex justify-end gap-2 mt-5">
+              <button onClick={() => setShowAddModal(false)} className="px-4 py-2 text-sm text-neutral-500 hover:text-neutral-700 dark:hover:text-neutral-300">Cancel</button>
+              <button
+                onClick={handleAdd}
+                disabled={saving}
+                className="px-4 py-2 rounded-lg bg-neutral-900 dark:bg-neutral-100 text-white dark:text-neutral-900 text-sm font-medium hover:opacity-90 disabled:opacity-50"
+              >
+                {saving ? "Saving…" : "Add"}
+              </button>
+            </div>
+          </div>
         </div>
       )}
 

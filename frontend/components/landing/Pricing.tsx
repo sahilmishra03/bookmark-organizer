@@ -1,3 +1,4 @@
+import Link from "next/link"
 import { Check } from "lucide-react"
 import { cn } from "@/lib/utils"
 
@@ -105,16 +106,17 @@ export default function Pricing() {
             </div>
 
             {/* CTA */}
-            <button
+            <Link
+              href="/login"
               className={cn(
-                "w-full py-3 cursor-pointer rounded-lg font-semibold text-sm transition-all duration-150",
+                "w-full py-3 cursor-pointer rounded-lg font-semibold text-sm transition-all duration-150 text-center block",
                 plan.popular
                   ? "bg-white text-neutral-900 hover:bg-neutral-100"
                   : "bg-neutral-900 dark:bg-neutral-700 text-white hover:bg-neutral-700 dark:hover:bg-neutral-600"
               )}
             >
               {plan.price === 0 ? "Get started free" : "Get Started"}
-            </button>
+            </Link>
 
             {/* Base features */}
             <ul className="flex flex-col gap-3">

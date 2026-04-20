@@ -31,9 +31,9 @@ const LINKS = [
   {
     heading: "Account",
     items: [
-      { label: "Sign Up", href: "#" },
-      { label: "Log In", href: "#" },
-      { label: "Forgot Password", href: "#" },
+      { label: "Sign Up", href: "/login" },
+      { label: "Log In", href: "/login" },
+      { label: "Forgot Password", href: "/login" },
     ],
   },
 ]
@@ -63,7 +63,7 @@ export default function Footer() {
               <ul className="flex flex-col gap-3">
                 {col.items.map((item) => (
                   <li key={item.label}>
-                    <Link href={item.href} className="text-sm text-neutral-500 hover:text-neutral-200 transition-colors duration-150">
+                    <Link href={item.href} className="text-sm text-neutral-500 hover:text-neutral-800 dark:hover:text-neutral-200 transition-colors duration-150">
                       {item.label}
                     </Link>
                   </li>
