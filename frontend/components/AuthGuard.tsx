@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuthStore } from '@/store/authStore'
-import { getRefreshToken } from '@/lib/tokenUtils'
+import { getRefreshToken, isAccessTokenExpired } from '@/lib/tokenUtils'
 import api from '@/lib/api'
 
 export default function AuthGuard({ children }: { children: React.ReactNode }) {
@@ -15,7 +15,7 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
     async function check() {
       hydrateFromCookies()
 
-      if (useAuthStore.getState().isAuthenticated) {
+      if (useAuthStore.getState().isAuthenticated && !isAccessTokenExpired()) {
         setChecking(false)
         return
       }

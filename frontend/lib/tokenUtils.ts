@@ -35,3 +35,14 @@ export function clearTokens() {
   Cookies.remove(REFRESH_KEY)
   Cookies.remove(USER_KEY)
 }
+
+export function isAccessTokenExpired(): boolean {
+  const token = getAccessToken()
+  if (!token) return true
+  try {
+    const payload = JSON.parse(atob(token.split('.')[1]))
+    return Date.now() >= payload.exp * 1000
+  } catch {
+    return true
+  }
+}
