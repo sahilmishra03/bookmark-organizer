@@ -10,7 +10,7 @@ export const Macbook = () => {
                     className="opacity-0 group-hover:opacity-100 object-fit transition-all duration-600 ease-[cubic-bezier(0.85, 0, 0.15, 1)] h-full w-full object-contain"
                     height={1000}
                     width={10000}
-                    src="https://assets.aceternity.com/agenforce-demo-1.jpg"
+                    src="/dashboard.png"
                     alt=""
                 />
             </div>
@@ -33,7 +33,7 @@ export const Phone = () => {
                     className="opacity-0 group-hover:opacity-100 object-cover transition-opacity duration-500 h-full w-full"
                     height={1000}
                     width={500}
-                    src="https://assets.aceternity.com/agenforce-demo-1.jpg"
+                    src="/dashboard-phone.png"
                     alt="App view"
                 />
             </div>
@@ -53,7 +53,7 @@ export const IPad = () => {
                     className="opacity-0 group-hover:opacity-100 object-cover transition-opacity duration-500 h-full w-full"
                     height={750}
                     width={1000}
-                    src="https://assets.aceternity.com/agenforce-demo-1.jpg"
+                    src="/dashboard-copy.png"
                     alt="iPad view"
                 />
             </div>

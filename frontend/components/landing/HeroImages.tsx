@@ -13,7 +13,7 @@ const HeroImages = () => {
                 transition={{ ease: [0.11, 0, 0.5, 0], duration: 0.4, delay: 0.2 }}
             >
                 <Image
-                    src={"https://assets.aceternity.com/agenforce-demo-1.jpg"}
+                    src={"/dashboard.png"}
                     height={1000}
                     width={1000}
                     alt="hero-image"
@@ -28,7 +28,7 @@ const HeroImages = () => {
                 transition={{ ease: [0.11, 0, 0.5, 0], duration: 0.4 }}
             >
                 <Image
-                    src={"https://assets.aceternity.com/agenforce-demo-2.jpg"}
+                    src={"/dashboard-copy.png"}
                     height={1000}
                     width={1000}
                     alt="hero-image"
