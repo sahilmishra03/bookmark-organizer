@@ -1,5 +1,5 @@
-from pydantic import BaseModel, HttpUrl, Field, field_validator
-from typing import Optional, Union
+from pydantic import BaseModel, HttpUrl, Field
+from typing import Optional, Union, List
 from datetime import datetime
 from uuid import UUID
 
@@ -16,7 +16,11 @@ class FolderResponse(FolderBase):
     id: UUID
     created_at: datetime
     updated_at: Optional[datetime]
+    model_config = {"from_attributes": True}
+    
 
+class TagSchema(BaseModel):
+    name: str
     model_config = {"from_attributes": True}
 
 
@@ -29,6 +33,7 @@ class BookmarkBase(BaseModel):
 
 class BookmarkCreate(BookmarkBase):
     folder_id: UUID
+    tags: List[str] = Field(default_factory=list)
 
 
 class BookmarkPut(BaseModel):
@@ -36,6 +41,7 @@ class BookmarkPut(BaseModel):
     url: HttpUrl
     description: Optional[str] = None
     favorite: bool = False
+    tags: List[str] = Field(default_factory=list)
 
 
 class BookmarkUpdate(BaseModel):
@@ -43,6 +49,7 @@ class BookmarkUpdate(BaseModel):
     url: Optional[HttpUrl] = None
     description: Optional[str] = None
     favorite: Optional[bool] = None
+    tags: Optional[List[str]] = None
 
 
 class BookmarkResponse(BookmarkBase):
@@ -50,5 +57,6 @@ class BookmarkResponse(BookmarkBase):
     folder_id: UUID
     created_at: datetime
     updated_at: Optional[datetime]
+    tags: List[str] = Field(default_factory=list)
 
     model_config = {"from_attributes": True}

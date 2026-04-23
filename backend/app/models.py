@@ -1,4 +1,4 @@
-from sqlalchemy import Column, String, Boolean, DateTime, ForeignKey, Integer
+from sqlalchemy import Column, String, Boolean, DateTime, ForeignKey, Integer, Table   # ✅ ADDED Table
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 from sqlalchemy.dialects.postgresql import UUID
@@ -33,12 +33,30 @@ class Folder(Base):
         return f"<Folder(id={self.id}, name='{self.name}', user_id={self.user_id})>"
 
 
+bookmark_tags = Table(
+    "bookmark_tags",
+    Base.metadata,
+    Column("bookmark_id", UUID(as_uuid=True), ForeignKey("bookmarks.id", ondelete="CASCADE"), index=True),
+    Column("tag_id", UUID(as_uuid=True), ForeignKey("tags.id", ondelete="CASCADE"), index=True),
+)
+
+
+class Tag(Base):
+    __tablename__ = "tags"
+
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    name = Column(String, unique=True, index=True, nullable=False)
+
+    def __repr__(self):
+        return f"<Tag(name='{self.name}')>"
+
+
 class Bookmark(Base):
     __tablename__ = "bookmarks"
     
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, index=True)
     title = Column(String, index=True)
-    url = Column(String, index=True)   # keep non-unique for flexibility
+    url = Column(String, index=True)
     description = Column(String)
     favorite = Column(Boolean, default=False, index=True)
 
@@ -53,8 +71,10 @@ class Bookmark(Base):
 
     folder = relationship("Folder", back_populates="bookmarks")
 
+    tags = relationship("Tag", secondary=bookmark_tags, backref="bookmarks")
+
     def __repr__(self):
-        return f"<Bookmark(id={self.id}, title='{self.title}', folder_id={self.folder_id})>"
+        return f"<Bookmark(id={self.id}, title='{self.title}')>"
 
 
 class User(Base):

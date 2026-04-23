@@ -4,7 +4,7 @@ from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from enum import Enum
 
 from app.database import get_db
-from app.models import Bookmark, Folder
+from app.models import Bookmark, Folder, Tag
 from app.schemas import BookmarkResponse
 from app.utils.jwt import verify_access_token
 
@@ -36,6 +36,8 @@ class SearchType(str, Enum):
 def search_bookmarks(
     folder_name: str | None = Query(None),
     bookmark_title: str | None = Query(None),
+    tag: str | None = Query(None),                     
+    tags: str | None = Query(None),                     
     search_type: SearchType = Query(SearchType.partial),
     limit: int = Query(20, le=100),
     offset: int = Query(0),
@@ -44,15 +46,15 @@ def search_bookmarks(
     db: Session = Depends(get_db)
 ):
     """
-    Search bookmarks using folder name and/or bookmark title.
+    Search bookmarks using folder, title, and tags.
     """
 
     user_id = user["user_id"]
 
-    if not folder_name and not bookmark_title:
+    if not folder_name and not bookmark_title and not tag and not tags:
         raise HTTPException(
             status_code=400,
-            detail="Provide folder_name or bookmark_title"
+            detail="Provide folder_name, bookmark_title, or tag"
         )
 
     query = db.query(Bookmark).join(Folder).filter(
@@ -78,5 +80,17 @@ def search_bookmarks(
             query = query.filter(Bookmark.title.like(f"%{bookmark_title}%"))
         elif search_type == SearchType.first_letter:
             query = query.filter(Bookmark.title.like(f"{bookmark_title}%"))
+
+    if tag:
+        clean_tag = tag.lower().strip().replace("#", "")
+        query = query.join(Bookmark.tags).filter(Tag.name == clean_tag)
+
+    if tags:
+        tag_list = [
+            t.lower().strip().replace("#", "")
+            for t in tags.split(",")
+        ]
+
+        query = query.join(Bookmark.tags).filter(Tag.name.in_(tag_list))
 
     return query.offset(offset).limit(limit).all()

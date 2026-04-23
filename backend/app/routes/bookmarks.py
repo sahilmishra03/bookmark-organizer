@@ -4,7 +4,7 @@ from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from uuid import UUID
 
 from app.database import get_db
-from app.models import Bookmark, Folder
+from app.models import Bookmark, Folder, Tag
 from app.schemas import BookmarkCreate as BookmarkSchema, BookmarkPut, BookmarkResponse
 from app.utils.jwt import verify_access_token
 
@@ -25,6 +25,22 @@ def get_current_user(
     return payload
 
 
+def handle_tags(db: Session, bookmark: Bookmark, tags: list[str]):
+    bookmark.tags.clear()
+
+    for tag_name in tags:
+        tag_name = tag_name.lower().strip()
+
+        tag = db.query(Tag).filter(Tag.name == tag_name).first()
+
+        if not tag:
+            tag = Tag(name=tag_name)
+            db.add(tag)
+            db.flush()
+
+        bookmark.tags.append(tag)
+
+
 @router.post(
     "/folders/{folder_id}/bookmarks",
     response_model=BookmarkResponse,
@@ -36,8 +52,6 @@ def create_bookmark(
     user=Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
-    """Create a bookmark inside a folder (user-protected)."""
-
     user_id = user["user_id"]
 
     folder = db.query(Folder).filter(
@@ -55,6 +69,9 @@ def create_bookmark(
         favorite=bookmark.favorite,
         folder_id=folder_id
     )
+
+    if bookmark.tags:
+        handle_tags(db, new_bookmark, bookmark.tags)
 
     db.add(new_bookmark)
     db.commit()
@@ -74,11 +91,8 @@ def update_bookmark(
     user=Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
-    """Update bookmark (only if user owns it)."""
-
     user_id = user["user_id"]
 
-    # Validate folder ownership
     folder = db.query(Folder).filter(
         Folder.id == folder_id,
         Folder.user_id == user_id
@@ -87,7 +101,6 @@ def update_bookmark(
     if not folder:
         raise HTTPException(status_code=404, detail="Folder not found")
 
-    # Validate bookmark exists and user owns it
     existing = db.query(Bookmark).join(Folder).filter(
         Bookmark.id == bookmark_id,
         Bookmark.folder_id == folder_id,
@@ -97,17 +110,24 @@ def update_bookmark(
     if not existing:
         raise HTTPException(status_code=404, detail="Bookmark not found")
 
-    # Update the bookmark using a separate query without join
     update_data = bookmark.model_dump()
-    if 'url' in update_data:
-        update_data['url'] = str(update_data['url'])
-    
+
+    if "url" in update_data:
+        update_data["url"] = str(update_data["url"])
+
+    tags = update_data.pop("tags", None)
+
     db.query(Bookmark).filter(Bookmark.id == bookmark_id).update(
         update_data, synchronize_session=False
     )
 
     db.commit()
     db.refresh(existing)
+
+    if tags is not None:
+        handle_tags(db, existing, tags)
+        db.commit()
+        db.refresh(existing)
 
     return existing
 
@@ -122,8 +142,6 @@ def delete_bookmark(
     user=Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
-    """Delete bookmark (only if user owns it)."""
-
     user_id = user["user_id"]
 
     folder = db.query(Folder).filter(
@@ -159,8 +177,6 @@ def get_favorite_bookmarks(
     user=Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
-    """Get all favorite bookmarks for logged-in user."""
-
     user_id = user["user_id"]
 
     bookmarks = db.query(Bookmark).join(Folder).filter(
@@ -170,13 +186,12 @@ def get_favorite_bookmarks(
 
     return bookmarks
 
+
 @router.get("/allbookmarks", response_model=list[BookmarkResponse])
 def get_all_bookmarks(
     user=Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
-    """Get all bookmarks for logged-in user."""
-
     user_id = user["user_id"]
 
     bookmarks = db.query(Bookmark).join(Folder).filter(

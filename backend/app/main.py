@@ -1,13 +1,12 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.middleware.sessions import SessionMiddleware
-
 from .config import settings
 from .database import engine
 from . import models
-from .routes import auth, protected, folders, bookmarks, search
-
-models.Base.metadata.create_all(bind=engine)
+from .routes import auth, protected, folders, bookmarks, search, tags, import_export  
+import alembic
+# models.Base.metadata.create_all(bind=engine)  # Now using Alembic migrations
 
 app = FastAPI(
     title="Bookmark Organizer API",
@@ -38,7 +37,8 @@ app.include_router(protected.router)
 app.include_router(folders.router)
 app.include_router(bookmarks.router)
 app.include_router(search.router)
-
+app.include_router(tags.router)
+app.include_router(import_export.router)
 
 @app.get("/")
 def root():
