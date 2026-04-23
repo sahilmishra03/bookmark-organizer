@@ -4,6 +4,7 @@ import { getAccessToken, getUser, setTokens, setUser, clearTokens } from '@/lib/
 interface User {
   name: string
   email: string
+  profile_picture?: string
 }
 
 interface AuthState {

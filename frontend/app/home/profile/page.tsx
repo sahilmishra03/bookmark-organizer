@@ -66,7 +66,27 @@ export default function ProfilePage() {
       >
         {/* Avatar header */}
         <div className="flex items-center gap-4 px-6 py-6 border-b border-neutral-200 dark:border-neutral-800">
-          <div className="h-14 w-14 rounded-full bg-neutral-800 dark:bg-neutral-200 flex items-center justify-center shrink-0">
+          {user?.profile_picture ? (
+            <img
+              src={user.profile_picture}
+              alt={displayName}
+              className="h-14 w-14 rounded-full object-cover shrink-0"
+              referrerPolicy="no-referrer"
+              crossOrigin="anonymous"
+              onError={(e) => {
+                console.error('Failed to load profile picture in profile page:', user.profile_picture)
+                // Fallback to initials if image fails to load
+                const target = e.target as HTMLImageElement
+                target.style.display = 'none'
+                const parent = target.parentElement
+                if (parent) {
+                  const fallback = parent.querySelector('.fallback-avatar') as HTMLElement
+                  if (fallback) fallback.style.display = 'flex'
+                }
+              }}
+            />
+          ) : null}
+          <div className={`h-14 w-14 rounded-full bg-neutral-800 dark:bg-neutral-200 flex items-center justify-center shrink-0 fallback-avatar ${user?.profile_picture ? 'hidden' : ''}`}>
             <span className="text-xl font-bold text-white dark:text-neutral-900">{initial}</span>
           </div>
           <div className="min-w-0">

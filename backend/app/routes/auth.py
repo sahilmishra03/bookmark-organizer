@@ -68,17 +68,24 @@ async def auth_callback(request: Request, db: Session = Depends(get_db)):
         ).first()
 
         if not existing_user:
+            picture = user_info.get("picture")
+            if picture:
+                picture = picture.replace("=s96-c", "=s200-c")
+            
             user = models.User(
                 email=user_info["email"],
                 name=user_info.get("name"),
-                profile_picture=user_info.get("picture")
+                profile_picture=picture
             )
             db.add(user)
             db.commit()
             db.refresh(user)
         else:
             existing_user.name = user_info.get("name")
-            existing_user.profile_picture = user_info.get("picture")
+            picture = user_info.get("picture")
+            if picture:
+                picture = picture.replace("=s96-c", "=s200-c")
+            existing_user.profile_picture = picture
             db.commit()
             user = existing_user
 
@@ -111,6 +118,7 @@ async def auth_callback(request: Request, db: Session = Depends(get_db)):
             "refresh_token": refresh_token,
             "name": user.name or "",
             "email": user.email,
+            "profile_picture": user.profile_picture or ""
         })
         return RedirectResponse(url=f"http://localhost:3000/auth/callback?{params}")
 
@@ -184,6 +192,7 @@ async def auth_callback_github(request: Request, db: Session = Depends(get_db)):
             "refresh_token": refresh_token,
             "name": user.name or "",
             "email": user.email,
+            "profile_picture": user.profile_picture or ""
         })
         return RedirectResponse(url=f"http://localhost:3000/auth/callback?{params}")
 

@@ -28,7 +28,11 @@ const Sidebar = ({ isOpen, setIsOpen, isMobile = false }: SidebarProps) => {
   const router = useRouter()
   const user = useAuthStore((s) => s.user)
 
-  useEffect(() => setMounted(true), [])
+  useEffect(() => {
+    setMounted(true)
+    // Debug: Log user profile picture
+    console.log('Sidebar user profile picture:', user?.profile_picture)
+  }, [user?.profile_picture])
 
   return (
     <>
@@ -137,7 +141,27 @@ const Sidebar = ({ isOpen, setIsOpen, isMobile = false }: SidebarProps) => {
               onClick={() => { router.push('/home/profile'); if (isMobile) setIsOpen(false) }}
               className="flex items-center gap-3 px-[14px] py-3 cursor-pointer hover:bg-neutral-100 dark:hover:bg-neutral-900 border-t border-dashed border-neutral-200 dark:border-neutral-700"
             >
-              <div className="h-7 w-7 rounded-full bg-neutral-800 dark:bg-neutral-200 flex items-center justify-center shrink-0">
+              {user?.profile_picture ? (
+                <img
+                  src={user.profile_picture}
+                  alt={user.name || 'Profile'}
+                  className="h-7 w-7 rounded-full object-cover shrink-0"
+                  referrerPolicy="no-referrer"
+                  crossOrigin="anonymous"
+                  onError={(e) => {
+                    console.error('Failed to load profile picture in sidebar:', user.profile_picture)
+                    // Fallback to initials if image fails to load
+                    const target = e.target as HTMLImageElement
+                    target.style.display = 'none'
+                    const parent = target.parentElement
+                    if (parent) {
+                      const fallback = parent.querySelector('.fallback-avatar') as HTMLElement
+                      if (fallback) fallback.style.display = 'flex'
+                    }
+                  }}
+                />
+              ) : null}
+              <div className={`h-7 w-7 rounded-full bg-neutral-800 dark:bg-neutral-200 flex items-center justify-center shrink-0 fallback-avatar ${user?.profile_picture ? 'hidden' : ''}`}>
                 <span className="text-xs font-semibold text-white dark:text-neutral-900">
                   {user?.name ? user.name[0].toUpperCase() : '?'}
                 </span>

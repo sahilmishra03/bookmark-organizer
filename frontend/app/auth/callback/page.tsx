@@ -14,9 +14,13 @@ function CallbackHandler() {
     const refreshToken = searchParams.get('refresh_token')
     const name = searchParams.get('name') || ''
     const email = searchParams.get('email') || ''
+    const profile_picture = decodeURIComponent(searchParams.get('profile_picture') || '')
+
+    // Debug: Log the received profile picture
+    console.log('Profile picture received (decoded):', profile_picture)
 
     if (accessToken && refreshToken) {
-      setAuth({ name, email }, accessToken, refreshToken)
+      setAuth({ name, email, profile_picture }, accessToken, refreshToken)
       router.replace('/home')
     } else {
       router.replace('/login?error=auth_failed')

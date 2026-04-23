@@ -17,11 +17,11 @@ export function getRefreshToken(): string | undefined {
   return Cookies.get(REFRESH_KEY)
 }
 
-export function setUser(user: { name: string; email: string }) {
+export function setUser(user: { name: string; email: string; profile_picture?: string }) {
   Cookies.set(USER_KEY, JSON.stringify(user), { expires: 7, sameSite: 'lax' })
 }
 
-export function getUser(): { name: string; email: string } | null {
+export function getUser(): { name: string; email: string; profile_picture?: string } | null {
   try {
     const raw = Cookies.get(USER_KEY)
     return raw ? JSON.parse(raw) : null
