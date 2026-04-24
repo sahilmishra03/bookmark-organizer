@@ -123,6 +123,8 @@ async def auth_callback(request: Request, db: Session = Depends(get_db)):
         return RedirectResponse(url=f"http://localhost:3000/auth/callback?{params}")
 
     except Exception as e:
+        import logging
+        logging.error(f"Google OAuth error: {str(e)}", exc_info=True)
         if "mismatching_state" in str(e):
             return RedirectResponse(url="http://localhost:3000/login?error=session_expired")
         return RedirectResponse(url="http://localhost:3000/login?error=auth_failed")
@@ -197,6 +199,8 @@ async def auth_callback_github(request: Request, db: Session = Depends(get_db)):
         return RedirectResponse(url=f"http://localhost:3000/auth/callback?{params}")
 
     except Exception as e:
+        import logging
+        logging.error(f"GitHub OAuth error: {str(e)}", exc_info=True)
         if "mismatching_state" in str(e):
             return RedirectResponse(url="http://localhost:3000/login?error=session_expired")
         return RedirectResponse(url="http://localhost:3000/login?error=auth_failed")
