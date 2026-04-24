@@ -22,7 +22,7 @@ def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(securit
 
 
 # =========================================================
-# 🔥 IMPORT HTML (CHROME FORMAT SUPPORT)
+# IMPORT HTML (CHROME FORMAT SUPPORT)
 # =========================================================
 @router.post("/import/html")
 async def import_html_bookmarks(
@@ -42,9 +42,11 @@ async def import_html_bookmarks(
     folder_cache = {}
     tag_cache = {}
 
-    def get_or_create_folder(name: str):
-        if name in folder_cache:
-            return folder_cache[name]
+    def get_or_create_folder(name: str, parent_folder=None):
+        # Create a unique key for caching
+        cache_key = f"{parent_folder.name} > {name}" if parent_folder else name
+        if cache_key in folder_cache:
+            return folder_cache[cache_key]
 
         folder = db.query(Folder).filter(
             Folder.name == name,
@@ -60,7 +62,7 @@ async def import_html_bookmarks(
             db.add(folder)
             db.flush()
 
-        folder_cache[name] = folder
+        folder_cache[cache_key] = folder
         return folder
 
     def get_or_create_tag(name: str):
@@ -76,15 +78,15 @@ async def import_html_bookmarks(
         tag_cache[name] = tag
         return tag
 
-    def process_dl(dl, parent_path=None):
+    def process_dl(dl, parent_folder=None):
         nonlocal created_count
 
-        for dt in dl.find_all("dt", recursive=False):
+        for dt in dl.find_all("dt"):
 
             h3 = dt.find("h3")
             a = dt.find("a")
 
-            # 📁 FOLDER
+            # FOLDER
             if h3:
                 folder_name = h3.text.strip()
 
@@ -92,18 +94,17 @@ async def import_html_bookmarks(
                 if folder_name.lower() in ["bookmarks bar", "bookmarks"]:
                     inner_dl = dt.find("dl")
                     if inner_dl:
-                        process_dl(inner_dl, parent_path)
+                        process_dl(inner_dl, parent_folder)
                     continue
 
-                full_path = f"{parent_path} > {folder_name}" if parent_path else folder_name
-                get_or_create_folder(full_path)
+                current_folder = get_or_create_folder(folder_name, parent_folder)
 
                 inner_dl = dt.find("dl")
                 if inner_dl:
-                    process_dl(inner_dl, full_path)
+                    process_dl(inner_dl, current_folder)
 
-            # 🔗 BOOKMARK
-            if a:
+            # BOOKMARK
+            elif a:
                 title = a.text.strip()
                 url = a.get("href")
 
@@ -119,14 +120,18 @@ async def import_html_bookmarks(
                 if exists:
                     continue
 
-                folder = None
-                if parent_path:
-                    folder = get_or_create_folder(parent_path)
+                folder = parent_folder
 
+                # Extract description from title if available (Chrome doesn't store descriptions in bookmarks)
+                description = title  # Use title as description since HTML bookmarks don't have separate description field
+                favorite = False  # Default to false since HTML bookmarks don't have favorite flag
+                
                 bookmark = Bookmark(
                     id=uuid4(),
                     title=title,
                     url=url,
+                    description=description,
+                    favorite=favorite,
                     folder_id=folder.id if folder else None
                 )
 
@@ -151,7 +156,7 @@ async def import_html_bookmarks(
 
 
 # =========================================================
-# 🔥 EXPORT HTML (CHROME FORMAT)
+# EXPORT HTML (CHROME FORMAT)
 # =========================================================
 @router.get("/export/html")
 def export_html_bookmarks(
@@ -178,7 +183,9 @@ def export_html_bookmarks(
     now = int(time.time())
 
     html = """<!DOCTYPE NETSCAPE-Bookmark-file-1>
-<!-- This is an automatically generated file -->
+<!-- This is an automatically generated file.
+     It will be read and overwritten.
+     DO NOT EDIT! -->
 <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=UTF-8">
 <TITLE>Bookmarks</TITLE>
 <H1>Bookmarks</H1>
@@ -186,7 +193,7 @@ def export_html_bookmarks(
 """
 
     # root folder
-    html += f'    <DT><H3 ADD_DATE="{now}" LAST_MODIFIED="{now}">Bookmarks bar</H3>\n'
+    html += f'    <DT><H3 ADD_DATE="{now}" LAST_MODIFIED="{now}" PERSONAL_TOOLBAR_FOLDER="true">Bookmarks bar</H3>\n'
     html += "    <DL><p>\n"
 
     for folder, items in folder_map.items():
@@ -195,6 +202,7 @@ def export_html_bookmarks(
         html += "        <DL><p>\n"
 
         for b in items:
+            # Basic Chrome bookmark format without extra metadata
             html += f'            <DT><A HREF="{b.url}" ADD_DATE="{now}">{b.title}</A>\n'
 
         html += "        </DL><p>\n"
