@@ -4,9 +4,10 @@ import { useEffect, useState } from "react"
 import BookmarkRow from "@/components/home/bookmarks/BookmarkRow"
 import api from "@/lib/api"
 import { timeAgo, stripProtocol } from "@/lib/timeUtils"
+import { formatTagInput, parseTagInput } from "@/lib/utils"
 import type { Bookmark, Folder } from "@/lib/types"
 
-type EditForm = { title: string; url: string; description: string; favorite: boolean }
+type EditForm = { title: string; url: string; description: string; favorite: boolean; tags: string }
 
 export default function BookmarksPage() {
   const [bookmarks, setBookmarks] = useState<Bookmark[]>([])
@@ -14,10 +15,10 @@ export default function BookmarksPage() {
   const [filter, setFilter] = useState("")
   const [loading, setLoading] = useState(true)
   const [showModal, setShowModal] = useState(false)
-  const [form, setForm] = useState({ title: "", url: "", description: "", folder_id: "" })
+  const [form, setForm] = useState({ title: "", url: "", description: "", folder_id: "", tags: "" })
   const [saving, setSaving] = useState(false)
   const [editTarget, setEditTarget] = useState<Bookmark | null>(null)
-  const [editForm, setEditForm] = useState<EditForm>({ title: "", url: "", description: "", favorite: false })
+  const [editForm, setEditForm] = useState<EditForm>({ title: "", url: "", description: "", favorite: false, tags: "" })
 
   useEffect(() => {
     Promise.all([
@@ -34,7 +35,8 @@ export default function BookmarksPage() {
 
   const filtered = bookmarks.filter(b =>
     b.title.toLowerCase().includes(filter.toLowerCase()) ||
-    b.url.toLowerCase().includes(filter.toLowerCase())
+    b.url.toLowerCase().includes(filter.toLowerCase()) ||
+    b.tags.some(tag => tag.includes(filter.toLowerCase().replace(/^#/, "")))
   )
 
   const handleAdd = async () => {
@@ -43,11 +45,11 @@ export default function BookmarksPage() {
     try {
       const { data } = await api.post<Bookmark>(
         `/v1/bookmarks/folders/${form.folder_id}/bookmarks`,
-        { title: form.title, url: form.url, description: form.description || null, favorite: false, folder_id: form.folder_id }
+        { title: form.title, url: form.url, description: form.description || null, favorite: false, folder_id: form.folder_id, tags: parseTagInput(form.tags) }
       )
       setBookmarks(prev => [data, ...prev])
       setShowModal(false)
-      setForm(f => ({ ...f, title: "", url: "", description: "" }))
+      setForm(f => ({ ...f, title: "", url: "", description: "", tags: "" }))
     } finally {
       setSaving(false)
     }
@@ -61,14 +63,14 @@ export default function BookmarksPage() {
   const handleToggleFavorite = async (b: Bookmark) => {
     const { data } = await api.put<Bookmark>(
       `/v1/bookmarks/folders/${b.folder_id}/bookmarks/${b.id}`,
-      { title: b.title, url: b.url, description: b.description, favorite: !b.favorite }
+      { title: b.title, url: b.url, description: b.description, favorite: !b.favorite, tags: b.tags }
     )
     setBookmarks(prev => prev.map(x => x.id === b.id ? data : x))
   }
 
   const openEdit = (b: Bookmark) => {
     setEditTarget(b)
-    setEditForm({ title: b.title, url: b.url, description: b.description ?? "", favorite: b.favorite })
+    setEditForm({ title: b.title, url: b.url, description: b.description ?? "", favorite: b.favorite, tags: formatTagInput(b.tags) })
   }
 
   const handleEdit = async () => {
@@ -77,7 +79,7 @@ export default function BookmarksPage() {
     try {
       const { data } = await api.put<Bookmark>(
         `/v1/bookmarks/folders/${editTarget.folder_id}/bookmarks/${editTarget.id}`,
-        { title: editForm.title, url: editForm.url, description: editForm.description || null, favorite: editForm.favorite }
+        { title: editForm.title, url: editForm.url, description: editForm.description || null, favorite: editForm.favorite, tags: parseTagInput(editForm.tags) }
       )
       setBookmarks(prev => prev.map(x => x.id === editTarget.id ? data : x))
       setEditTarget(null)
@@ -120,6 +122,7 @@ export default function BookmarksPage() {
             title={b.title}
             url={stripProtocol(b.url)}
             folder={folderMap[b.folder_id] ?? "—"}
+            tags={b.tags}
             starred={b.favorite}
             time={timeAgo(b.created_at)}
             onDelete={() => handleDelete(b)}
@@ -161,6 +164,12 @@ export default function BookmarksPage() {
                 onChange={e => setForm(f => ({ ...f, description: e.target.value }))}
                 className="px-3 py-2 rounded-lg border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-sm outline-none focus:ring-2 focus:ring-neutral-400 text-neutral-900 dark:text-neutral-100 placeholder:text-neutral-400"
               />
+              <input
+                placeholder="Tags (comma separated)"
+                value={form.tags}
+                onChange={e => setForm(f => ({ ...f, tags: e.target.value }))}
+                className="px-3 py-2 rounded-lg border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-sm outline-none focus:ring-2 focus:ring-neutral-400 text-neutral-900 dark:text-neutral-100 placeholder:text-neutral-400"
+              />
             </div>
             <div className="flex justify-end gap-2 mt-5">
               <button onClick={() => setShowModal(false)} className="px-4 py-2 text-sm text-neutral-500 hover:text-neutral-700 dark:hover:text-neutral-300">Cancel</button>
@@ -198,6 +207,12 @@ export default function BookmarksPage() {
                 placeholder="Description (optional)"
                 value={editForm.description}
                 onChange={e => setEditForm(f => ({ ...f, description: e.target.value }))}
+                className="px-3 py-2 rounded-lg border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-sm outline-none focus:ring-2 focus:ring-neutral-400 text-neutral-900 dark:text-neutral-100 placeholder:text-neutral-400"
+              />
+              <input
+                placeholder="Tags (comma separated)"
+                value={editForm.tags}
+                onChange={e => setEditForm(f => ({ ...f, tags: e.target.value }))}
                 className="px-3 py-2 rounded-lg border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-sm outline-none focus:ring-2 focus:ring-neutral-400 text-neutral-900 dark:text-neutral-100 placeholder:text-neutral-400"
               />
               <label className="flex items-center gap-2 text-sm text-neutral-700 dark:text-neutral-300 cursor-pointer">

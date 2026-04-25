@@ -1,12 +1,14 @@
 "use client"
 
 import { useEffect, useState } from "react"
+import Link from "next/link"
 import { motion } from "framer-motion"
-import { Bookmark, Folder, Star } from "lucide-react"
+import { Bookmark, Folder, Hash, Star } from "lucide-react"
 import StatCard from "@/components/home/dashboard/StatCard"
 import RecentBookmarkRow from "@/components/home/dashboard/RecentBookmarkRow"
 import api from "@/lib/api"
 import { buildTrend, timeAgo, stripProtocol } from "@/lib/timeUtils"
+import { parseTagInput } from "@/lib/utils"
 import type { Bookmark as BookmarkType, Folder as FolderType } from "@/lib/types"
 
 const container = {
@@ -20,7 +22,8 @@ export default function DashboardPage() {
   const [favorites, setFavorites] = useState<BookmarkType[]>([])
   const [loading, setLoading] = useState(true)
   const [showAddModal, setShowAddModal] = useState(false)
-  const [addForm, setAddForm] = useState({ title: "", url: "", description: "", folder_id: "" })
+  const [showAllTags, setShowAllTags] = useState(false)
+  const [addForm, setAddForm] = useState({ title: "", url: "", description: "", folder_id: "", tags: "" })
   const [saving, setSaving] = useState(false)
 
   useEffect(() => {
@@ -44,11 +47,11 @@ export default function DashboardPage() {
     try {
       const { data } = await api.post<BookmarkType>(
         `/v1/bookmarks/folders/${addForm.folder_id}/bookmarks`,
-        { title: addForm.title, url: addForm.url, description: addForm.description || null, favorite: false, folder_id: addForm.folder_id }
+        { title: addForm.title, url: addForm.url, description: addForm.description || null, favorite: false, folder_id: addForm.folder_id, tags: parseTagInput(addForm.tags) }
       )
       setBookmarks(prev => [data, ...prev])
       setShowAddModal(false)
-      setAddForm(f => ({ ...f, title: "", url: "", description: "" }))
+      setAddForm(f => ({ ...f, title: "", url: "", description: "", tags: "" }))
     } finally {
       setSaving(false)
     }
@@ -76,6 +79,13 @@ export default function DashboardPage() {
     .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
     .slice(0, 5)
 
+  const latestTags = [...bookmarks]
+    .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+    .flatMap(bookmark => bookmark.tags)
+    .filter((tag, index, tags) => tags.indexOf(tag) === index)
+
+  const visibleTags = showAllTags ? latestTags : latestTags.slice(0, 3)
+
   return (
     <div className="p-4 sm:p-6 min-h-screen">
       <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.35 }} className="flex items-center justify-between mb-8">
@@ -102,6 +112,37 @@ export default function DashboardPage() {
         ))}
       </motion.div>
 
+      {latestTags.length > 0 && (
+        <motion.nav
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.35, delay: 0.18 }}
+          className="mb-4 flex flex-wrap items-center gap-2 rounded-xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 px-4 py-3"
+        >
+          <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-neutral-100 dark:bg-neutral-800 text-neutral-500 dark:text-neutral-400">
+            <Hash size={15} />
+          </span>
+          {visibleTags.map(tag => (
+            <Link
+              key={tag}
+              href={`/home/search?q=${encodeURIComponent(`#${tag}`)}`}
+              className="rounded-full border border-neutral-200 dark:border-neutral-700 px-3 py-1 text-xs font-medium text-neutral-600 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors"
+            >
+              #{tag}
+            </Link>
+          ))}
+          {latestTags.length > 3 && (
+            <button
+              type="button"
+              onClick={() => setShowAllTags(value => !value)}
+              className="rounded-full bg-neutral-900 dark:bg-neutral-100 px-3 py-1 text-xs font-medium text-white dark:text-neutral-900 hover:opacity-90 transition-opacity"
+            >
+              {showAllTags ? "Show less" : "Show all"}
+            </button>
+          )}
+        </motion.nav>
+      )}
+
       <motion.div
         initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
@@ -123,6 +164,7 @@ export default function DashboardPage() {
                 title={b.title}
                 url={stripProtocol(b.url)}
                 folder={folderMap[b.folder_id] ?? "—"}
+                tags={b.tags}
                 time={timeAgo(b.created_at)}
               />
             ))}
@@ -160,6 +202,12 @@ export default function DashboardPage() {
                 placeholder="Description (optional)"
                 value={addForm.description}
                 onChange={e => setAddForm(f => ({ ...f, description: e.target.value }))}
+                className="px-3 py-2 rounded-lg border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-sm outline-none focus:ring-2 focus:ring-neutral-400 text-neutral-900 dark:text-neutral-100 placeholder:text-neutral-400"
+              />
+              <input
+                placeholder="Tags (comma separated)"
+                value={addForm.tags}
+                onChange={e => setAddForm(f => ({ ...f, tags: e.target.value }))}
                 className="px-3 py-2 rounded-lg border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-sm outline-none focus:ring-2 focus:ring-neutral-400 text-neutral-900 dark:text-neutral-100 placeholder:text-neutral-400"
               />
             </div>

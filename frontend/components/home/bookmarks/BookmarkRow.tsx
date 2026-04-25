@@ -7,6 +7,7 @@ interface BookmarkRowProps {
   title: string
   url: string
   folder: string
+  tags?: string[]
   starred: boolean
   time: string
   onDelete?: () => void
@@ -14,7 +15,7 @@ interface BookmarkRowProps {
   onToggleFavorite?: () => void
 }
 
-export default function BookmarkRow({ title, url, folder, starred, time, onDelete, onEdit, onToggleFavorite }: BookmarkRowProps) {
+export default function BookmarkRow({ title, url, folder, tags = [], starred, time, onDelete, onEdit, onToggleFavorite }: BookmarkRowProps) {
   return (
     <div className="flex items-center justify-between px-5 py-3 hover:bg-neutral-50 dark:hover:bg-neutral-800/50 transition-colors group">
       <div className="flex items-center gap-3 min-w-0">
@@ -31,7 +32,17 @@ export default function BookmarkRow({ title, url, folder, starred, time, onDelet
           >
             {title}
           </LinkPreview>
-          <p className="text-xs text-neutral-400 truncate">{url}</p>
+          <div className="mt-1 flex flex-wrap items-center gap-1.5">
+            <p className="text-xs text-neutral-400 truncate">{url}</p>
+            {tags.map(tag => (
+              <span
+                key={tag}
+                className="text-[11px] px-1.5 py-0.5 rounded bg-neutral-100 dark:bg-neutral-800 text-neutral-500 dark:text-neutral-400"
+              >
+                #{tag}
+              </span>
+            ))}
+          </div>
         </div>
       </div>
       <div className="flex items-center gap-3 shrink-0 ml-3">
