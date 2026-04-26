@@ -1,4 +1,4 @@
-from pydantic import BaseModel, HttpUrl, Field
+from pydantic import BaseModel, HttpUrl, Field, field_validator
 from typing import Optional, Union, List
 from datetime import datetime
 from uuid import UUID
@@ -58,5 +58,15 @@ class BookmarkResponse(BookmarkBase):
     created_at: datetime
     updated_at: Optional[datetime]
     tags: List[str] = Field(default_factory=list)
+
+    @field_validator("tags", mode="before")
+    @classmethod
+    def serialize_tags(cls, tags):
+        if not tags:
+            return []
+        return [
+            tag.name if hasattr(tag, "name") else str(tag)
+            for tag in tags
+        ]
 
     model_config = {"from_attributes": True}

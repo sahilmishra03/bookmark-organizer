@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Depends, Query, HTTPException, status
 from sqlalchemy.orm import Session
+from sqlalchemy import func
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from enum import Enum
 
@@ -83,14 +84,25 @@ def search_bookmarks(
 
     if tag:
         clean_tag = tag.lower().strip().replace("#", "")
-        query = query.join(Bookmark.tags).filter(Tag.name == clean_tag)
+        if clean_tag:
+            query = query.join(Bookmark.tags)
+            if search_type == SearchType.partial:
+                query = query.filter(Tag.name.ilike(f"%{clean_tag}%"))
+            elif search_type == SearchType.exact:
+                query = query.filter(Tag.name == clean_tag)
+            elif search_type == SearchType.case_sensitive:
+                query = query.filter(Tag.name.like(f"%{clean_tag}%"))
+            elif search_type == SearchType.first_letter:
+                query = query.filter(Tag.name.ilike(f"{clean_tag}%"))
 
     if tags:
         tag_list = [
             t.lower().strip().replace("#", "")
             for t in tags.split(",")
         ]
+        tag_list = [t for t in tag_list if t]
 
-        query = query.join(Bookmark.tags).filter(Tag.name.in_(tag_list))
+        if tag_list:
+            query = query.join(Bookmark.tags).filter(func.lower(Tag.name).in_(tag_list))
 
-    return query.offset(offset).limit(limit).all()
+    return query.distinct().offset(offset).limit(limit).all()

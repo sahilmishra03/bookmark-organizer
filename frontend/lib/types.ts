@@ -13,6 +13,7 @@ export interface Bookmark {
   description: string | null
   favorite: boolean
   folder_id: string
+  tags: string[]
   created_at: string
   updated_at: string | null
 }

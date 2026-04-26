@@ -39,6 +39,7 @@ export default function FavoritesPage() {
             title={b.title}
             url={stripProtocol(b.url)}
             folder={folderMap[b.folder_id] ?? "—"}
+            tags={b.tags}
             time={timeAgo(b.created_at)}
           />
         ))}

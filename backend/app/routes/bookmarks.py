@@ -29,7 +29,9 @@ def handle_tags(db: Session, bookmark: Bookmark, tags: list[str]):
     bookmark.tags.clear()
 
     for tag_name in tags:
-        tag_name = tag_name.lower().strip()
+        tag_name = tag_name.lower().strip().replace("#", "")
+        if not tag_name:
+            continue
 
         tag = db.query(Tag).filter(Tag.name == tag_name).first()
 
@@ -110,7 +112,7 @@ def update_bookmark(
     if not existing:
         raise HTTPException(status_code=404, detail="Bookmark not found")
 
-    update_data = bookmark.model_dump()
+    update_data = bookmark.model_dump(exclude_unset=True)
 
     if "url" in update_data:
         update_data["url"] = str(update_data["url"])
