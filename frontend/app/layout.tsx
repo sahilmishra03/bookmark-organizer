@@ -14,6 +14,11 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Boomark-Organizer",
   description: "Save anything. Find it everywhere.",
+  icons: {
+    icon: "/bookmark.png",
+    shortcut: "/bookmark.png",
+    apple: "/bookmark.png",
+  },
 };
 
 export default function RootLayout({

@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import { motion } from "framer-motion"
-import { LogOut, Mail, User, Hash } from "lucide-react"
+import { LogOut, Mail, User } from "lucide-react"
 import { useAuthStore } from "@/store/authStore"
 import { getRefreshToken } from "@/lib/tokenUtils"
 import api from "@/lib/api"
@@ -99,11 +99,6 @@ export default function ProfilePage() {
         <div className="divide-y divide-neutral-100 dark:divide-neutral-800">
           <InfoRow icon={User} label="Name" value={loading ? "—" : displayName} />
           <InfoRow icon={Mail} label="Email" value={loading ? "—" : displayEmail} />
-          <InfoRow
-            icon={Hash}
-            label="User ID"
-            value={loading ? "—" : (meData?.user_id ? `${meData.user_id.slice(0, 8)}…` : "—")}
-          />
         </div>
 
         {/* Logout */}

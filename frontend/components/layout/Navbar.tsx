@@ -10,8 +10,7 @@ import {
 
 const navItems = [
     { name: "Features", link: "#features" },
-    { name: "Pricing", link: "#pricing" },
-    { name: "About", link: "#about" },
+    { name: "About", link: "/about" },
 ]
 
 export default function AppNavbar() {

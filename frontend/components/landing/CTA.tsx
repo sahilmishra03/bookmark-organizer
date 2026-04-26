@@ -8,14 +8,11 @@ export default function CTA() {
         Never lose a link again.
       </h2>
       <p className="text-neutral-400 max-w-lg text-base md:text-lg tracking-wide">
-        Join thousands of people who use Boomarki to save, organise, and access their bookmarks everywhere.
+        Join thousands of people who use Boomarki to save, organise, and access their bookmarks everywhere. <strong>Completely free forever.</strong>
       </p>
       <div className="flex flex-wrap gap-4 items-center justify-center">
         <Link href="/login" className="bg-neutral-900 px-5 py-2.5 text-white dark:bg-neutral-200 hover:bg-neutral-700 dark:text-black dark:hover:bg-neutral-300 transition-all ease-in duration-150 rounded font-medium">
           Get started free
-        </Link>
-        <Link href="#pricing" className="hover:bg-neutral-200 dark:hover:bg-neutral-800 px-5 py-2.5 transition-all ease-in duration-150 rounded">
-          View pricing
         </Link>
       </div>
     </section>

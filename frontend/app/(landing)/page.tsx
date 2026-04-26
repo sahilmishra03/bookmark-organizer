@@ -2,7 +2,6 @@ import Container from "@/components/layout/Container"
 import Hero from "@/components/landing/Hero"
 import SyncDevices from "@/components/landing/SyncDevices"
 import BentoGrid from "@/components/landing/BentoGrid"
-import Pricing from "@/components/landing/Pricing"
 import CTA from "@/components/landing/CTA"
 import Demo from "@/components/landing/Demo"
 import Upcoming from "@/components/landing/Upcoming"
@@ -15,7 +14,6 @@ const page = () => {
         <SyncDevices />
         <BentoGrid />
         <Demo/>
-        <Pricing />
         <Upcoming/>
         <CTA />
       </Container>

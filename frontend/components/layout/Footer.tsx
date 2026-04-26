@@ -5,27 +5,24 @@ const LINKS = [
     heading: "Product",
     items: [
       { label: "Features", href: "#features" },
-      { label: "Pricing", href: "#pricing" },
       { label: "Browser Extension", href: "#" },
-      { label: "Mobile App", href: "#" },
-      { label: "Changelog", href: "#" },
+      { label: "Mobile App", href: "/mobile-app" },
+      { label: "Changelog", href: "/changelog" },
     ],
   },
   {
     heading: "Socials",
     items: [
-      { label: "Twitter", href: "#" },
       { label: "GitHub", href: "#" },
       { label: "Discord", href: "#" },
-      { label: "LinkedIn", href: "#" },
     ],
   },
   {
     heading: "Legal",
     items: [
-      { label: "Privacy Policy", href: "#" },
-      { label: "Terms of Service", href: "#" },
-      { label: "Cookie Policy", href: "#" },
+      { label: "Privacy Policy", href: "/privacy" },
+      { label: "Terms of Service", href: "/terms" },
+      { label: "Cookie Policy", href: "/cookies" },
     ],
   },
   {
@@ -33,7 +30,6 @@ const LINKS = [
     items: [
       { label: "Sign Up", href: "/login" },
       { label: "Log In", href: "/login" },
-      { label: "Forgot Password", href: "/login" },
     ],
   },
 ]

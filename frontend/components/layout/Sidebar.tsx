@@ -12,6 +12,7 @@ const navItems = [
   { icon: Folder,   label: "Folders",    href: "/home/folders" },
   { icon: Star,     label: "Favorites",  href: "/home/favorites" },
   { icon: Search,   label: "Search",     href: "/home/search" },
+  { icon: Settings, label: "Settings",   href: "/home/settings" },
 ]
 
 interface SidebarProps {
@@ -83,7 +84,7 @@ const Sidebar = ({ isOpen, setIsOpen, isMobile = false }: SidebarProps) => {
           <div>
             <div className="flex items-center gap-3 px-[14px] py-4 border-b border-dashed border-neutral-200 dark:border-neutral-700">
               <img
-                src="bookmark.png"
+                src="/bookmark.png"
                 alt="logo"
                 width={30}
                 height={30}

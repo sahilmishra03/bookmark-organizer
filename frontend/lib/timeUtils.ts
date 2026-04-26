@@ -27,3 +27,30 @@ export function buildTrend(dates: string[], points = 8): number[] {
     return times.filter(t => t <= cutoff).length
   })
 }
+
+export function buildRealTrend(dates: string[], points = 8): number[] {
+  if (!dates.length) return Array(points).fill(0)
+  
+  const now = Date.now()
+  const timePoints = Array.from({ length: points }, (_, i) => {
+    // Create time buckets going backwards from now
+    const bucketSize = (7 * 24 * 60 * 60 * 1000) / points // 7 days divided by points
+    const bucketStart = now - (bucketSize * (points - i))
+    const bucketEnd = now - (bucketSize * (points - i - 1))
+    return { start: bucketStart, end: bucketEnd }
+  })
+  
+  // Count items in each time bucket
+  const sortedDates = dates.map(d => new Date(d).getTime()).sort((a, b) => a - b)
+  return timePoints.map(bucket => {
+    return sortedDates.filter(time => time >= bucket.start && time < bucket.end).length
+  })
+}
+
+export function generateMockTrend(baseValue: number, variance: number = 0.3, points: number = 8): number[] {
+  return Array.from({ length: points }, (_, i) => {
+    const randomFactor = 1 + (Math.random() - 0.5) * variance
+    const trendFactor = 1 + (i / points) * 0.2 // Slight upward trend
+    return Math.max(0, Math.round(baseValue * randomFactor * trendFactor))
+  })
+}

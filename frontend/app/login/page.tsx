@@ -1,7 +1,6 @@
 import React from 'react'
 import LoginHeader from '../../components/login/LoginHeader'
 import SocialLogins from '../../components/login/SocialLogins'
-import EmailLoginForm from '../../components/login/EmailLoginForm'
 
 const page = () => {
     return (
@@ -9,7 +8,6 @@ const page = () => {
             <div className='h-120 w-fit flex flex-col justify-center items-center'>
                 <LoginHeader />
                 <SocialLogins />
-                <EmailLoginForm />
             </div>
         </div>
     )

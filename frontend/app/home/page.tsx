@@ -7,7 +7,7 @@ import { Bookmark, Folder, Hash, Star } from "lucide-react"
 import StatCard from "@/components/home/dashboard/StatCard"
 import RecentBookmarkRow from "@/components/home/dashboard/RecentBookmarkRow"
 import api from "@/lib/api"
-import { buildTrend, timeAgo, stripProtocol } from "@/lib/timeUtils"
+import { buildTrend, buildRealTrend, generateMockTrend, timeAgo, stripProtocol } from "@/lib/timeUtils"
 import { parseTagInput } from "@/lib/utils"
 import type { Bookmark as BookmarkType, Folder as FolderType } from "@/lib/types"
 
@@ -61,17 +61,17 @@ export default function DashboardPage() {
     {
       label: "Total Bookmarks", value: bookmarks.length, icon: Bookmark,
       color: "text-neutral-600 dark:text-neutral-300",
-      trend: buildTrend(bookmarks.map(b => b.created_at)),
+      trend: bookmarks.length > 0 ? buildRealTrend(bookmarks.map(b => b.created_at)) : generateMockTrend(bookmarks.length, 0.4),
     },
     {
       label: "Folders", value: folders.length, icon: Folder,
       color: "text-neutral-600 dark:text-neutral-300",
-      trend: buildTrend(folders.map(f => f.created_at)),
+      trend: folders.length > 0 ? buildRealTrend(folders.map(f => f.created_at)) : generateMockTrend(folders.length, 0.3),
     },
     {
       label: "Favorites", value: favorites.length, icon: Star,
       color: "text-neutral-600 dark:text-neutral-300",
-      trend: buildTrend(favorites.map(b => b.created_at)),
+      trend: favorites.length > 0 ? buildRealTrend(favorites.map(b => b.created_at)) : generateMockTrend(favorites.length, 0.5),
     },
   ]
 

@@ -36,6 +36,28 @@ function CountUp({ target }: { target: number }) {
 function Sparkline({ data }: { data: number[] }) {
   const w = 120
   const h = 40
+  
+  // Handle empty or insufficient data
+  if (!data || data.length < 2) {
+    // Return a flat line when there's insufficient data
+    const flatY = h * 0.5
+    return (
+      <svg width={w} height={h} viewBox={`0 0 ${w} ${h}`} className="overflow-visible">
+        <motion.path
+          d={`M 0,${flatY} L ${w},${flatY}`}
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.5"
+          strokeLinecap="round"
+          className="text-neutral-400 dark:text-neutral-500"
+          initial={{ pathLength: 0, opacity: 0 }}
+          animate={{ pathLength: 1, opacity: 1 }}
+          transition={{ duration: 0.9, ease: "easeOut", delay: 0.2 }}
+        />
+      </svg>
+    )
+  }
+
   const min = Math.min(...data)
   const max = Math.max(...data)
   const range = max - min || 1
@@ -49,17 +71,20 @@ function Sparkline({ data }: { data: number[] }) {
   const linePath = `M ${points.join(" L ")}`
   const areaPath = `M 0,${h} L ${points.join(" L ")} L ${w},${h} Z`
 
+  // Generate unique gradient ID using random string
+  const gradientId = `grad-${Math.random().toString(36).substr(2, 9)}`
+
   return (
     <svg width={w} height={h} viewBox={`0 0 ${w} ${h}`} className="overflow-visible">
       <defs>
-        <linearGradient id={`grad-${data[0]}`} x1="0" y1="0" x2="0" y2="1">
+        <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
           <stop offset="0%" stopColor="currentColor" stopOpacity="0.15" />
           <stop offset="100%" stopColor="currentColor" stopOpacity="0" />
         </linearGradient>
       </defs>
       <motion.path
         d={areaPath}
-        fill={`url(#grad-${data[0]})`}
+        fill={`url(#${gradientId})`}
         className="text-neutral-500"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
@@ -90,20 +115,29 @@ function Sparkline({ data }: { data: number[] }) {
   )
 }
 
-const fadeUp = {
-  hidden: { opacity: 0, y: 16 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.4, ease: "easeOut" as const } },
-}
 
 export default function StatCard({ label, value, icon: Icon, color, index, trend }: StatCardProps) {
-  const last = trend[trend.length - 1]
-  const prev = trend[trend.length - 2]
+  // Handle empty or insufficient trend data
+  const last = trend && trend.length > 0 ? trend[trend.length - 1] : 0
+  const prev = trend && trend.length > 1 ? trend[trend.length - 2] : last
   const delta = last - prev
   const up = delta >= 0
 
+  // Debug logging to understand trend data
+  console.log(`StatCard Debug - ${label}:`, {
+    trend,
+    last,
+    prev,
+    delta,
+    up,
+    trendLength: trend?.length
+  })
+
   return (
     <motion.div
-      variants={fadeUp}
+      initial={{ opacity: 0, y: 16 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4, ease: "easeOut", delay: index * 0.1 }}
       className={`p-5 flex flex-col gap-4 ${index !== 2 ? "border-b sm:border-b-0 sm:border-r border-neutral-200 dark:border-neutral-800" : ""}`}
     >
       <div className="flex items-center justify-between">

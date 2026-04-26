@@ -47,8 +47,9 @@ const Demo = () => {
             </div>
           </div>
 
-          <div className="p-3 md:p-4 bg-neutral-50 dark:bg-neutral-950">
-            <div className="relative aspect-[16/10] overflow-hidden rounded-xl border border-neutral-200 dark:border-neutral-800 bg-black">
+          <div className="p-3 md:p-4 bg-neutral-50 dark:bg-neutral-950 flex items-center justify-center">
+            {/* Removed aspect-[16/10] so the container sizes to the video naturally */}
+            <div className="relative w-full overflow-hidden rounded-xl border border-neutral-200 dark:border-neutral-800 bg-black flex">
               <video
                 src={VIDEO_SRC}
                 autoPlay
@@ -56,7 +57,8 @@ const Demo = () => {
                 loop
                 playsInline
                 preload="metadata"
-                className="h-full w-full object-cover"
+                // Changed from h-full w-full object-cover to w-full h-auto
+                className="w-full h-auto block"
               />
             </div>
           </div>
