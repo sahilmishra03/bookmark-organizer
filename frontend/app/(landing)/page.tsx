@@ -4,6 +4,8 @@ import SyncDevices from "@/components/landing/SyncDevices"
 import BentoGrid from "@/components/landing/BentoGrid"
 import Pricing from "@/components/landing/Pricing"
 import CTA from "@/components/landing/CTA"
+import Demo from "@/components/landing/Demo"
+import Upcoming from "@/components/landing/Upcoming"
 
 const page = () => {
   return (
@@ -12,7 +14,9 @@ const page = () => {
         <Hero />
         <SyncDevices />
         <BentoGrid />
+        <Demo/>
         <Pricing />
+        <Upcoming/>
         <CTA />
       </Container>
     </div>

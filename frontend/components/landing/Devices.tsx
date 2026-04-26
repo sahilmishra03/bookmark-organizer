@@ -30,7 +30,7 @@ export const Phone = () => {
             <div className="absolute top-16 -right-[4px] w-px h-7 bg-neutral-400 dark:bg-neutral-600 rounded-r-md"></div>
             <div className="w-full h-full rounded-[1.1rem] overflow-hidden bg-white dark:bg-[#101010]">
                 <Image
-                    className="opacity-0 group-hover:opacity-100 object-cover transition-opacity duration-500 h-full w-full"
+                    className="opacity-0  group-hover:opacity-100 object-cover rounded-2xl transition-opacity duration-500 h-full w-full"
                     height={1000}
                     width={500}
                     src="/dashboard-phone.png"
@@ -50,7 +50,7 @@ export const IPad = () => {
             <div className="absolute -top-[4px] left-28 h-px w-6 bg-neutral-400 dark:bg-neutral-600 rounded-t-md"></div>
             <div className="w-full h-full rounded-[1.1rem] overflow-hidden bg-white dark:bg-[#101010]">
                 <Image
-                    className="opacity-0 group-hover:opacity-100 object-cover transition-opacity duration-500 h-full w-full"
+                    className="opacity-0 rounded-2xl group-hover:opacity-100 object-cover transition-opacity duration-500 h-full w-full"
                     height={750}
                     width={1000}
                     src="/dashboard-copy.png"
