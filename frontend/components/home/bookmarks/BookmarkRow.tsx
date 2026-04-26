@@ -17,35 +17,33 @@ interface BookmarkRowProps {
 
 export default function BookmarkRow({ title, url, folder, tags = [], starred, time, onDelete, onEdit, onToggleFavorite }: BookmarkRowProps) {
   return (
-    <div className="flex items-center justify-between px-5 py-3 hover:bg-neutral-50 dark:hover:bg-neutral-800/50 transition-colors group">
-      <div className="flex items-center gap-3 flex-1 min-w-0">
-        <button
-          onClick={onToggleFavorite}
-          className={`text-sm shrink-0 transition-colors ${starred ? "text-yellow-400" : "text-neutral-300 dark:text-neutral-600 hover:text-yellow-400"}`}
+    <div className="flex items-center px-5 py-3 hover:bg-neutral-50 dark:hover:bg-neutral-800/50 transition-colors group">
+      <button
+        onClick={onToggleFavorite}
+        className={`text-sm shrink-0 transition-colors mr-3 ${starred ? "text-yellow-400" : "text-neutral-300 dark:text-neutral-600 hover:text-yellow-400"}`}
+      >
+        {starred ? "★" : "☆"}
+      </button>
+      <div className="flex-1 min-w-0">
+        <LinkPreview
+          url={`https://${url}`}
+          className="text-sm font-medium text-neutral-900 dark:text-neutral-100 hover:text-neutral-600 dark:hover:text-neutral-200 transition-colors block truncate"
         >
-          {starred ? "★" : "☆"}
-        </button>
-        <div className="flex-1 min-w-0">
-          <LinkPreview
-            url={`https://${url}`}
-            className="text-sm font-medium text-neutral-900 dark:text-neutral-100 hover:text-neutral-600 dark:hover:text-neutral-200 transition-colors block truncate"
-          >
-            {title}
-          </LinkPreview>
-          <div className="mt-1 flex flex-wrap items-center gap-1.5">
-            <p className="text-xs text-neutral-400 truncate flex-1 min-w-0">{url}</p>
-            {tags.map(tag => (
-              <span
-                key={tag}
-                className="text-[11px] px-1.5 py-0.5 rounded bg-neutral-100 dark:bg-neutral-800 text-neutral-500 dark:text-neutral-400 shrink-0"
-              >
-                #{tag}
-              </span>
-            ))}
-          </div>
+          {title}
+        </LinkPreview>
+        <div className="mt-1 flex items-center gap-2">
+          <p className="text-xs text-neutral-400 truncate">{url}</p>
+          {tags.map(tag => (
+            <span
+              key={tag}
+              className="text-[11px] px-1.5 py-0.5 rounded bg-neutral-100 dark:bg-neutral-800 text-neutral-500 dark:text-neutral-400 shrink-0"
+            >
+              #{tag}
+            </span>
+          ))}
         </div>
       </div>
-      <div className="flex items-center gap-2 shrink-0 ml-3">
+      <div className="flex items-center gap-2 shrink-0 ml-4">
         <span className="text-xs px-2 py-0.5 rounded-full bg-neutral-100 dark:bg-neutral-800 text-neutral-500 dark:text-neutral-400 whitespace-nowrap">
           {folder}
         </span>
