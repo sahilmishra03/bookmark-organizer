@@ -144,7 +144,7 @@ export default function SettingsPage() {
                 <button
                   onClick={handleExportHTML}
                   disabled={exporting || loading || bookmarks.length === 0}
-                  className="flex items-center gap-2 px-4 py-2 rounded-lg bg-neutral-900 dark:bg-neutral-100 hover:opacity-90 text-white dark:text-neutral-900 text-sm font-medium transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="flex items-center gap-2 px-4 py-2 rounded-lg bg-neutral-900 dark:bg-neutral-100 hover:opacity-90 text-white dark:text-neutral-900 text-sm font-medium transition-opacity disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                 >
                   <Download size={16} />
                   {exporting ? "Exporting…" : "Export"}
@@ -180,7 +180,7 @@ export default function SettingsPage() {
                   />
                   <button
                     disabled={importing || loading}
-                    className="flex items-center gap-2 px-4 py-2 rounded-lg border border-neutral-300 dark:border-neutral-600 hover:bg-neutral-50 dark:hover:bg-neutral-800 text-neutral-700 dark:text-neutral-300 text-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="flex items-center gap-2 px-4 py-2 rounded-lg border border-neutral-300 dark:border-neutral-600 hover:bg-neutral-50 dark:hover:bg-neutral-800 text-neutral-700 dark:text-neutral-300 text-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                   >
                     <Upload size={16} />
                     {importing ? "Importing…" : "Import"}

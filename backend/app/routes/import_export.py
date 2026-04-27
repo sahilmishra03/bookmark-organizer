@@ -81,16 +81,25 @@ async def import_html_bookmarks(
     def process_dl(dl, parent_folder=None):
         nonlocal created_count
 
-        for dt in dl.find_all("dt"):
+        # Get only DTs that are direct children of this DL (or its <p> wrapper)
+        processed_dts = set()
 
-            h3 = dt.find("h3")
-            a = dt.find("a")
+        for dt in dl.find_all("dt"):
+            # Skip if this DT belongs to a nested DL (not our level)
+            parent = dt.find_parent("dl")
+            if parent != dl:
+                continue
+            
+            if id(dt) in processed_dts:
+                continue
+            processed_dts.add(id(dt))
+
+            h3 = dt.find("h3", recursive=False)
+            a = dt.find("a", recursive=False)
 
             # FOLDER
             if h3:
                 folder_name = h3.text.strip()
-
-                # Skip root folder
                 if folder_name.lower() in ["bookmarks bar", "bookmarks"]:
                     inner_dl = dt.find("dl")
                     if inner_dl:
@@ -98,7 +107,6 @@ async def import_html_bookmarks(
                     continue
 
                 current_folder = get_or_create_folder(folder_name, parent_folder)
-
                 inner_dl = dt.find("dl")
                 if inner_dl:
                     process_dl(inner_dl, current_folder)
@@ -107,36 +115,26 @@ async def import_html_bookmarks(
             elif a:
                 title = a.text.strip()
                 url = a.get("href")
-
                 if not url:
                     continue
 
-                # prevent duplicates per user
                 exists = db.query(Bookmark).join(Folder).filter(
                     Bookmark.url == url,
                     Folder.user_id == user_id
                 ).first()
-
                 if exists:
                     continue
 
-                folder = parent_folder
-
-                # Extract description from title if available (Chrome doesn't store descriptions in bookmarks)
-                description = title  # Use title as description since HTML bookmarks don't have separate description field
-                favorite = False  # Default to false since HTML bookmarks don't have favorite flag
-                
                 bookmark = Bookmark(
                     id=uuid4(),
                     title=title,
                     url=url,
-                    description=description,
-                    favorite=favorite,
-                    folder_id=folder.id if folder else None
+                    description=title,
+                    favorite=False,
+                    folder_id=parent_folder.id if parent_folder else None
                 )
-
-                if folder:
-                    tag = get_or_create_tag(folder.name.lower())
+                if parent_folder:
+                    tag = get_or_create_tag(parent_folder.name.lower())
                     bookmark.tags.append(tag)
 
                 db.add(bookmark)
