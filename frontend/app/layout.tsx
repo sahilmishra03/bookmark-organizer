@@ -12,13 +12,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Boomark-Organizer",
+  title: "Ghostmark",
   description: "Save anything. Find it everywhere.",
-  icons: {
-    icon: "/bookmark.png",
-    shortcut: "/bookmark.png",
-    apple: "/bookmark.png",
-  },
 };
 
 export default function RootLayout({
@@ -28,6 +23,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={cn("h-full", "antialiased", geistMono.variable, "font-sans", geist.variable)} suppressHydrationWarning>
+      <head>
+  <link rel="icon" href="/favicon-light.svg" />
+  <link rel="shortcut icon" href="/favicon-light.svg" />
+  <link rel="apple-touch-icon" href="/favicon-light.svg" />
+  <script async src="/favicon-theme.js" />
+</head>
       <body className="min-h-full flex flex-col" suppressHydrationWarning>
         <ThemeProvider>
           {children}

@@ -40,7 +40,7 @@ export default function Upcoming() {
         Upcoming
       </h2>
       <p className="text-neutral-500 dark:text-neutral-400 text-center max-w-2xl text-sm md:text-base">
-        A quick look at the next improvements planned for Boomarki.
+        A quick look at the next improvements planned for Ghostmark.
       </p>
 
       <div className="mt-6 w-full overflow-hidden rounded-2xl border border-dashed border-neutral-200 bg-white dark:border-neutral-800 dark:bg-neutral-900">
@@ -50,7 +50,7 @@ export default function Upcoming() {
               Roadmap
             </p>
             <h3 className="mt-3 text-3xl font-bold tracking-tight md:text-4xl">
-              What we&apos;re building next for Boomarki.
+              What we&apos;re building next for Ghostmark.
             </h3>
             <p className="mt-4 max-w-xl text-sm text-neutral-500 dark:text-neutral-400 md:text-base">
               The core product is already focused on fast saving, clean organization,

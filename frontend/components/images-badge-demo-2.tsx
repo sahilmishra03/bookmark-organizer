@@ -5,7 +5,7 @@ export default function ImagesBadgeDemoTwo() {
   return (
     <div className="flex w-full ">
       <ImagesBadge
-        text="Introducing Bookmark-Organizer"
+        text="Introducing Ghostmark"
         images={[
           "/dashboard.png",
           "/dashboard-phone.png",

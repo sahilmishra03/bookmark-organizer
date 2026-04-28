@@ -1,6 +1,7 @@
 "use client";
 import { cn } from "@/lib/utils";
 import { IconMenu2, IconX } from "@tabler/icons-react";
+import { useTheme } from "next-themes";
 import {
   motion,
   AnimatePresence,
@@ -231,18 +232,30 @@ export const MobileNavToggle = ({
 };
 
 export const NavbarLogo = () => {
+  const [mounted, setMounted] = React.useState(false);
+  const { theme } = useTheme();
+
+  React.useEffect(() => setMounted(true), []);
+  React.useEffect(() => {
+    // Force re-render when theme changes
+  }, [theme]);
+
+  const logoSrc = mounted 
+    ? (theme === "dark" ? "/favicon-dark.svg" : "/favicon-light.svg")
+    : "/favicon-light.svg";
+
   return (
     <a
       href="#"
       className="relative z-20 mr-4 flex items-center space-x-2 px-2 py-1 text-sm font-normal text-black"
     >
       <img
-        src="bookmark.png"
+        src={logoSrc}
         alt="logo"
         width={30}
         height={30}
       />
-      <span className="font-medium text-black dark:text-white">Bookmark-Organizer</span>
+      <span className="font-medium text-black dark:text-white">Ghostmark</span>
     </a>
   );
 };

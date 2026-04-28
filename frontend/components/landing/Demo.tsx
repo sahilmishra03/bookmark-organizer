@@ -6,7 +6,7 @@ const Demo = () => {
   return (
     <section className="mt-20 md:mt-40 flex flex-col items-center gap-4 px-4 md:px-0">
       <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-center">
-        See Boomarki in action
+        See Ghostmark in action
       </h2>
       <p className="text-neutral-500 dark:text-neutral-400 text-center max-w-2xl text-sm md:text-base">
         Save links quickly, keep them organized, and find them again without digging through browser folders.

@@ -34,6 +34,9 @@ const Sidebar = ({ isOpen, setIsOpen, isMobile = false }: SidebarProps) => {
     // Debug: Log user profile picture
     console.log('Sidebar user profile picture:', user?.profile_picture)
   }, [user?.profile_picture])
+  useEffect(() => {
+    // Force re-render when theme changes
+  }, [theme])
 
   return (
     <>
@@ -84,7 +87,7 @@ const Sidebar = ({ isOpen, setIsOpen, isMobile = false }: SidebarProps) => {
           <div>
             <div className="flex items-center gap-3 px-[14px] py-4 border-b border-dashed border-neutral-200 dark:border-neutral-700">
               <img
-                src="/bookmark.png"
+                src={mounted ? (theme === "dark" ? "/favicon-dark.svg" : "/favicon-light.svg") : "/favicon-light.svg"}
                 alt="logo"
                 width={30}
                 height={30}
@@ -98,7 +101,7 @@ const Sidebar = ({ isOpen, setIsOpen, isMobile = false }: SidebarProps) => {
                     transition={{ duration: 0.15 }}
                     className="text-neutral-900  dark:text-neutral-100 font-semibold text-sm whitespace-nowrap"
                   >
-                    Bookmark
+                    Ghostmark
                   </motion.span>
                 )}
               </AnimatePresence>

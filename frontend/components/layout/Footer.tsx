@@ -1,11 +1,14 @@
-import Link from "next/link"
+"use client";
+import Link from "next/link";
+import { useTheme } from "next-themes";
+import React, { useEffect, useState } from "react";
 
 const LINKS = [
   {
     heading: "Product",
     items: [
       { label: "Features", href: "#features" },
-      { label: "Browser Extension", href: "#" },
+      { label: "Browser Extension", href: "/extension" },
       { label: "Mobile App", href: "/mobile-app" },
       { label: "Changelog", href: "/changelog" },
     ],
@@ -35,6 +38,18 @@ const LINKS = [
 ]
 
 export default function Footer() {
+  const [mounted, setMounted] = useState(false);
+  const { theme } = useTheme();
+
+  useEffect(() => setMounted(true), []);
+  useEffect(() => {
+    // Force re-render when theme changes
+  }, [theme]);
+
+  const logoSrc = mounted 
+    ? (theme === "dark" ? "/favicon-dark.svg" : "/favicon-light.svg")
+    : "/favicon-light.svg";
+
   return (
     <footer className="relative bg-neutral-100 dark:bg-neutral-950 overflow-hidden">
       <div className="max-w-[1200px] mx-auto px-6 pt-16 pb-0">
@@ -44,12 +59,12 @@ export default function Footer() {
           <div className="col-span-2 md:col-span-1 flex flex-col gap-4">
             <div className="flex items-center gap-2">
               <div className="h-9 w-9 rounded-lg bg-neutral-200 dark:bg-neutral-800 flex items-center justify-center">
-                <img src="bookmark.png" alt="logo" width={30} height={30} />
+                <img src={logoSrc} alt="logo" width={30} height={30} />
               </div>
-              <span className="font-semibold text-neutral-900 dark:text-white">Boomark-organizer</span>
+              <span className="font-semibold text-neutral-900 dark:text-white">Ghostmark</span>
             </div>
             <p className="text-sm text-neutral-500 leading-relaxed">
-              © {new Date().getFullYear()} Boomarki.<br />All rights reserved.
+              © {new Date().getFullYear()} Ghostmark.<br />All rights reserved.
             </p>
           </div>
 
@@ -71,7 +86,7 @@ export default function Footer() {
 
         <div className="mt-12 select-none pointer-events-none">
           <p className="text-[clamp(4rem,15vw,14rem)] font-bold leading-none tracking-tighter text-neutral-300 dark:text-neutral-900 whitespace-nowrap">
-            Bookmark
+            Ghostmark
           </p>
         </div>
       </div>

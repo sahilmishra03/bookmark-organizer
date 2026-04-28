@@ -25,9 +25,9 @@ export default function Changelog() {
     {
       version: "v1.0.0",
       date: "August 10, 2023",
-      title: "Boomarki is Live",
+      title: "Ghostmark is Live",
       changes: [
-        "Initial release of Boomarki.",
+        "Initial release of Ghostmark.",
         "Browser extensions for Chrome, Firefox, and Safari are now available.",
         "Core features include saving, tagging, and organizing links."
       ]
@@ -44,7 +44,7 @@ export default function Changelog() {
 
         <h1 className="text-3xl md:text-5xl font-bold tracking-tight mb-4">Changelog</h1>
         <p className="text-neutral-500 dark:text-neutral-400 mb-16">
-          New updates and improvements to Boomarki.
+          New updates and improvements to Ghostmark.
         </p>
 
         {/* Timeline Container */}

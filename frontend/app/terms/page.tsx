@@ -17,17 +17,17 @@ export default function TermsOfService() {
         <div className="space-y-8 text-neutral-600 dark:text-neutral-300 leading-relaxed">
           <section className="space-y-4">
             <h2 className="text-xl font-semibold text-black dark:text-white">1. Acceptance of Terms</h2>
-            <p>By accessing or using Boomarki, you agree to be bound by these Terms of Service and all applicable laws and regulations. If you do not agree with any of these terms, you are prohibited from using or accessing this site.</p>
+            <p>By accessing or using Ghostmark, you agree to be bound by these Terms of Service and all applicable laws and regulations. If you do not agree with any of these terms, you are prohibited from using or accessing this site.</p>
           </section>
 
           <section className="space-y-4">
             <h2 className="text-xl font-semibold text-black dark:text-white">2. Use License</h2>
-            <p>You are granted a personal, non-exclusive, non-transferable license to use the Boomarki app for your personal or internal business use. You may not use the service for any illegal or unauthorized purpose.</p>
+            <p>You are granted a personal, non-exclusive, non-transferable license to use the Ghostmark app for your personal or internal business use. You may not use the service for any illegal or unauthorized purpose.</p>
           </section>
 
           <section className="space-y-4">
             <h2 className="text-xl font-semibold text-black dark:text-white">3. User Content</h2>
-            <p>You retain all rights to the links, folders, and notes you save to Boomarki. We claim no ownership over your content. However, by using the service, you grant us a license to store, process, and display your content strictly to provide the service to you.</p>
+            <p>You retain all rights to the links, folders, and notes you save to Ghostmark. We claim no ownership over your content. However, by using the service, you grant us a license to store, process, and display your content strictly to provide the service to you.</p>
           </section>
 
           <section className="space-y-4">

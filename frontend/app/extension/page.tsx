@@ -3,9 +3,10 @@
 import React, { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { useTheme } from 'next-themes'
-import { Phone } from '@/components/landing/Devices'
+import { Macbook } from '@/components/landing/Devices'
 
-export default function MobileAppWaitlist() {
+
+export default function ExtensionWaitlist() {
   const [email, setEmail] = useState('')
   const [submitted, setSubmitted] = useState(false)
   const { resolvedTheme } = useTheme()
@@ -66,19 +67,19 @@ export default function MobileAppWaitlist() {
               <span className="relative inline-flex rounded-full h-2 w-2 bg-blue-500"></span>
             </span>
             <span className="text-xs font-semibold uppercase tracking-wider text-neutral-600 dark:text-neutral-400">
-              In Development
+              Coming Soon
             </span>
           </div>
           
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight leading-[1.1]">
-            Your library, <br className="hidden lg:block" />
+            Save links, <br className="hidden lg:block" />
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-neutral-400 to-black dark:from-neutral-500 dark:to-white">
-              now in your pocket.
+              without switching tabs.
             </span>
           </h1>
           
           <p className="text-neutral-500 dark:text-neutral-400 text-lg md:text-xl max-w-lg">
-            We are bringing the full Ghostmark experience to iOS and Android. Save links on the go with our native share sheet extension.
+            We are bringing Ghostmark directly to your browser. Save, tag, and organize links instantly with our Chrome, Safari, and Firefox extensions.
           </p>
 
           {/* Waitlist Form */}
@@ -91,6 +92,7 @@ export default function MobileAppWaitlist() {
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="Enter your email"
                   required
+                  suppressHydrationWarning
                   className="flex-1 px-4 py-3 rounded-xl border border-neutral-300 dark:border-neutral-700 bg-transparent text-black dark:text-white placeholder:text-neutral-400 focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-white transition-all"
                 />
                 <button 
@@ -125,10 +127,11 @@ export default function MobileAppWaitlist() {
             <div className="w-[450px] h-[450px] border border-neutral-100 dark:border-neutral-800/50 rounded-full absolute animate-[spin_30s_linear_infinite_reverse]"></div>
           </div>
           
-          {/* RESTORED: The Phone Component */}
-          <div className="relative z-10 scale-[1.15] md:scale-125 transform transition-transform hover:scale-[1.3] duration-500 ease-out origin-center mt-10 lg:mt-0">
+          {/* Visual Device: The Macbook */}
+          {/* Scaled slightly smaller than the phone so the wider width fits nicely inside the rings */}
+          <div className="relative z-10 scale-[0.85] md:scale-100 transform transition-transform hover:scale-[1.05] duration-500 ease-out origin-center mt-10 lg:mt-0">
              <div className="drop-shadow-2xl">
-               <Phone />
+               <Macbook />
              </div>
           </div>
         </div>
