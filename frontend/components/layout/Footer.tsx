@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import { useTheme } from "next-themes";
+import { useTheme } from "@/components/layout/ThemeProvider";
 import React, { useEffect, useState } from "react";
 
 const LINKS = [

@@ -2,13 +2,13 @@
 
 import React, { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { useTheme } from 'next-themes'
+import { useTheme } from '@/components/layout/ThemeProvider'
 import { Phone } from '@/components/landing/Devices'
 
 export default function MobileAppWaitlist() {
   const [email, setEmail] = useState('')
   const [submitted, setSubmitted] = useState(false)
-  const { resolvedTheme } = useTheme()
+  const { theme } = useTheme()
   const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
@@ -36,7 +36,7 @@ export default function MobileAppWaitlist() {
           <div className="h-9 w-9 rounded-lg bg-neutral-200 dark:bg-neutral-800 flex items-center justify-center transition-transform group-hover:scale-105">
             {mounted ? (
               <img
-                src={resolvedTheme === 'dark' ? '/favicon-dark.svg' : '/favicon-light.svg'}
+                src={theme === 'dark' ? '/favicon-dark.svg' : '/favicon-light.svg'}
                 alt="logo"
                 width={30}
                 height={30}

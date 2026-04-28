@@ -1,7 +1,7 @@
 "use client"
 import { motion, AnimatePresence } from "framer-motion"
 import { ArrowBigLeft, ArrowBigRight, BookmarkIcon, Home, Settings, Folder, Star, Sun, Moon, Search, Bookmark } from "lucide-react"
-import { useTheme } from "next-themes"
+import { useTheme } from "@/components/layout/ThemeProvider"
 import { useState, useEffect } from "react"
 import { usePathname, useRouter } from "next/navigation"
 import { useAuthStore } from "@/store/authStore"
