@@ -10,6 +10,16 @@ const nextConfig: NextConfig = {
         hostname: "assets.aceternity.com",
       },
     ],
+    localPatterns: [
+      {
+        pathname: "/dashboard.png",
+        search: "",
+      },
+      {
+        pathname: "/dashboard-copy.png", 
+        search: "",
+      },
+    ],
   },
 };
 

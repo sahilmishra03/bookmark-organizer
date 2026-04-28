@@ -1,6 +1,5 @@
 "use client"
 
-import Image from "next/image"
 import React from "react"
 
 export const Macbook = () => {
@@ -10,11 +9,8 @@ export const Macbook = () => {
             
             {/* Screen Lid */}
             <div className='h-[92%] w-[94%] dark:bg-[#101010] flex items-center justify-center rounded-t-xl border-t-[3px] border-x-[3px] border-b-2 border-neutral-300 dark:border-neutral-700 [transform:rotateX(-60deg)] group-hover:[transform:rotateX(0deg)] origin-bottom transition-all ease-[cubic-bezier(0.85,0,0.15,1)] duration-[600ms] overflow-hidden'>
-                <Image
-                    // Removed invalid 'object-fit', kept 'object-cover'
+                <img
                     className="opacity-0 group-hover:opacity-100 object-cover transition-opacity duration-[600ms] ease-[cubic-bezier(0.85,0,0.15,1)] h-full w-full"
-                    height={1000}
-                    width={1000}
                     src="/dashboard.png"
                     alt="Macbook view"
                 />
@@ -40,10 +36,8 @@ export const Phone = () => {
             
             {/* Screen */}
             <div className="w-full h-full rounded-[1.1rem] overflow-hidden bg-white dark:bg-[#101010]">
-                <Image
+                <img
                     className="opacity-0 group-hover:opacity-100 object-cover transition-opacity duration-500 h-full w-full"
-                    height={500}
-                    width={250}
                     src="/dashboard-phone.png"
                     alt="Phone App view"
                 />
@@ -64,10 +58,8 @@ export const IPad = () => {
             
             {/* Screen */}
             <div className="w-full h-full rounded-[1.1rem] overflow-hidden bg-white dark:bg-[#101010]">
-                <Image
+                <img
                     className="opacity-0 group-hover:opacity-100 object-cover transition-opacity duration-500 h-full w-full"
-                    height={750}
-                    width={1000}
                     src="/dashboard-copy.png"
                     alt="iPad view"
                 />
