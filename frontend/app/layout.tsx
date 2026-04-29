@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist_Mono, Geist } from "next/font/google";
+import Script from "next/script";
 import "./globals.css";
 import { cn } from "@/lib/utils";
 import { ThemeProvider } from "@/components/layout/ThemeProvider";
@@ -27,6 +28,7 @@ export default function RootLayout({
         <link rel="icon" href="/favicon-light.svg" />
         <link rel="shortcut icon" href="/favicon-light.svg" />
         <link rel="apple-touch-icon" href="/favicon-light.svg" />
+        <Script src="/favicon-theme.js" strategy="afterInteractive" />
       </head>
       <body className="min-h-full flex flex-col" suppressHydrationWarning>
         <ThemeProvider>
