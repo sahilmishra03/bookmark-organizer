@@ -23,7 +23,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={cn("h-full", "antialiased", geistMono.variable, "font-sans", geist.variable)} suppressHydrationWarning>
+    <html lang="en" className={cn("h-full", "antialiased", geistMono.variable, "font-sans", geist.variable)} suppressHydrationWarning data-scroll-behavior="smooth">
       <head>
         <link rel="icon" href="/favicon-light.svg" />
         <link rel="shortcut icon" href="/favicon-light.svg" />
