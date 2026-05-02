@@ -2,25 +2,25 @@ import { Bell, FolderKanban, Sparkles, Users } from "lucide-react"
 
 const roadmapItems = [
   {
-    title: "Smart tagging",
+    title: "Browser Extension",
     description:
-      "Suggested tags based on page content so new saves stay organized without extra work.",
-    status: "In progress",
+      "Save bookmarks instantly from any website with one click and sync automatically with your account.",
+    status: "Next up",
     accent: "bg-neutral-900 text-white dark:bg-neutral-100 dark:text-neutral-950",
     icon: Sparkles,
   },
   {
-    title: "Shared collections",
+    title: "Mobile App",
     description:
-      "Keep team resources, reading lists, and client research in one shared space.",
-    status: "Next up",
+      "Access and manage your bookmarks on Android and iOS with real-time sync across devices.",
+    status: "Planned",
     accent: "bg-neutral-100 text-neutral-700 dark:bg-neutral-800 dark:text-neutral-200",
     icon: Users,
   },
   {
-    title: "Nested folders",
+    title: "Advanced Search",
     description:
-      "Build deeper structures for large libraries without losing the speed of quick access.",
+      "Quickly find bookmarks using filters like tags, folders, and favorites for faster access.",
     status: "Planned",
     accent: "bg-neutral-100 text-neutral-700 dark:bg-neutral-800 dark:text-neutral-200",
     icon: FolderKanban,
@@ -28,9 +28,9 @@ const roadmapItems = [
 ]
 
 const releaseNotes = [
-  "Instant save feedback with clearer sync states",
-  "Smarter bookmark sorting for growing collections",
-  "Custom reminders for links you want to revisit",
+  "Import and export bookmarks with HTML support",
+  "Tag system for better organization",
+  "Improved performance and smoother experience",
 ]
 
 export default function Upcoming() {
@@ -50,7 +50,7 @@ export default function Upcoming() {
               Roadmap
             </p>
             <h3 className="mt-3 text-3xl font-bold tracking-tight md:text-4xl">
-              What we&apos;re building next for Ghostmark.
+              What's coming next for Ghostmark.
             </h3>
             <p className="mt-4 max-w-xl text-sm text-neutral-500 dark:text-neutral-400 md:text-base">
               The core product is already focused on fast saving, clean organization,

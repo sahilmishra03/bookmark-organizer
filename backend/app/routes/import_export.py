@@ -118,10 +118,17 @@ async def import_html_bookmarks(
                 if not url:
                     continue
 
-                exists = db.query(Bookmark).join(Folder).filter(
-                    Bookmark.url == url,
-                    Folder.user_id == user_id
-                ).first()
+                if parent_folder is not None:
+                    exists = db.query(Bookmark).join(Folder).filter(
+                        Bookmark.url == url,
+                        Folder.user_id == user_id
+                    ).first()
+                else:
+                    exists = db.query(Bookmark).filter(
+                        Bookmark.url == url,
+                        Bookmark.folder_id == None
+                    ).first()
+
                 if exists:
                     continue
 

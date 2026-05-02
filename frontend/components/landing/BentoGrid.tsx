@@ -1,6 +1,6 @@
 "use client"
 import SaveFromAnywhereCard from "@/components/ui/FeatureCard"
-import { motion, AnimatePresence } from "motion/react"
+import { motion, AnimatePresence } from "framer-motion"
 import { useState, useEffect } from "react"
 import { Laptop, Smartphone, Tablet, Search, Bookmark } from "lucide-react"
 

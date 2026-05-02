@@ -3,33 +3,63 @@ import Link from 'next/link'
 export default function Changelog() {
   const updates = [
     {
-      version: "v1.2.0",
-      date: "October 15, 2023",
-      title: "Nested Folders & Better Search",
+      version: "v1.0.0",
+      date: "May 2026",
+      title: "Ghostmark Launch",
       changes: [
-        "Added the ability to create folders inside of folders for deeper organization.",
-        "Completely rebuilt the search engine to index page titles instantly.",
-        "Fixed a bug where the Safari extension would occasionally crash on load."
+        "Initial release of Ghostmark bookmark manager.",
+        "Create folders and save bookmarks easily.",
+        "Basic search and favorites support added."
       ]
     },
     {
       version: "v1.1.0",
-      date: "September 02, 2023",
-      title: "Mobile App Beta & Dark Mode",
+      date: "June 2026",
+      title: "Tags & Import / Export",
       changes: [
-        "Launched the private beta for the iOS and Android applications.",
-        "Added full Dark Mode support across the entire web application.",
-        "Improved the onboarding flow for new users."
+        "Added tag system for better organization.",
+        "Import bookmarks from browser HTML files.",
+        "Export bookmarks in Chrome-compatible format."
       ]
     },
     {
-      version: "v1.0.0",
-      date: "August 10, 2023",
-      title: "Ghostmark is Live",
+      version: "v1.2.0",
+      date: "July 2026",
+      title: "Performance & Improvements",
       changes: [
-        "Initial release of Ghostmark.",
-        "Browser extensions for Chrome, Firefox, and Safari are now available.",
-        "Core features include saving, tagging, and organizing links."
+        "Improved search speed and accuracy.",
+        "Better UI and smoother experience.",
+        "Bug fixes and stability improvements."
+      ]
+    },
+    {
+      version: "v1.3.0 (Upcoming)",
+      date: "August 2026",
+      title: "Browser Extension",
+      changes: [
+        "Chrome extension for one-click bookmark saving.",
+        "Instant sync with your account.",
+        "Save links directly from any website."
+      ]
+    },
+    {
+      version: "v1.4.0 (Planned)",
+      date: "September 2026",
+      title: "Mobile App",
+      changes: [
+        "Mobile app for Android and iOS.",
+        "Access bookmarks anytime, anywhere.",
+        "Real-time sync across devices."
+      ]
+    },
+    {
+      version: "v1.5.0 (Planned)",
+      date: "October 2026",
+      title: "Advanced Search",
+      changes: [
+        "Search using tags, folders, and favorites.",
+        "Faster and more accurate results.",
+        "Improved filtering experience."
       ]
     }
   ]
@@ -44,7 +74,7 @@ export default function Changelog() {
 
         <h1 className="text-3xl md:text-5xl font-bold tracking-tight mb-4">Changelog</h1>
         <p className="text-neutral-500 dark:text-neutral-400 mb-16">
-          New updates and improvements to Ghostmark.
+          Updates and upcoming features of Ghostmark.
         </p>
 
         {/* Timeline Container */}

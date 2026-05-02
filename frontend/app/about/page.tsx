@@ -18,7 +18,7 @@ export default function AboutPage() {
           {/* Header */}
           <div className="mb-12">
             <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-4">
-              About Boomarki
+              About Ghostmark
             </h1>
             <p className="text-xl text-neutral-500 dark:text-neutral-400">
               The intelligent bookmark organizer that helps you save, organize, and access your favorite links across all devices.
@@ -30,13 +30,13 @@ export default function AboutPage() {
             <h2 className="text-2xl font-bold mb-4">Our Mission</h2>
             <p className="text-lg text-neutral-600 dark:text-neutral-300 leading-relaxed">
               In a world of endless information, we believe your bookmarks should be your personal knowledge base, not a chaotic mess of links. 
-              Boomarki was built to transform how you collect, organize, and retrieve the content that matters to you most.
+              Ghostmark was built to transform how you collect, organize, and retrieve the content that matters to you most.
             </p>
           </section>
 
           {/* Features Grid */}
           <section className="mb-16">
-            <h2 className="text-2xl font-bold mb-8">What Makes Boomarki Different</h2>
+            <h2 className="text-2xl font-bold mb-8">What Makes Ghostmark Different</h2>
             <div className="grid md:grid-cols-2 gap-8">
               <div className="p-6 rounded-xl border border-neutral-200 dark:border-neutral-800">
                 <h3 className="text-lg font-semibold mb-3">Smart Organization</h3>
@@ -69,11 +69,11 @@ export default function AboutPage() {
           <section className="mb-16">
             <h2 className="text-2xl font-bold mb-4">Our Story</h2>
             <p className="text-lg text-neutral-600 dark:text-neutral-300 leading-relaxed">
-              Boomarki started from a simple frustration: bookmark management was broken. We were drowning in browser bookmarks, 
+              Ghostmark started from a simple frustration: bookmark management was broken. We were drowning in browser bookmarks, 
               unable to find important links when we needed them most. After trying countless solutions, we decided to build our own.
             </p>
             <p className="text-lg text-neutral-600 dark:text-neutral-300 leading-relaxed mt-4">
-              Today, Boomarki helps thousands of users organize their digital lives. We're constantly improving and adding new features 
+              Today, Ghostmark helps thousands of users organize their digital lives. We're constantly improving and adding new features 
               based on your feedback.
             </p>
           </section>
