@@ -11,7 +11,7 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: "https",
-        hostname: "bookmark-organizer-jtx3.onrender.com",
+        hostname: "ghostmark.openforge.in",
       },
     ],
     localPatterns: [
