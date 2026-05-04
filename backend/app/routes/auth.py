@@ -41,12 +41,12 @@ github = oauth.register(
 
 @router.get("/login/google")
 async def login(request: Request):
-    redirect_uri = "http://localhost:8000/auth/callback/google"
+    redirect_uri = f"{settings.base_url}/auth/callback/google"
     return await google.authorize_redirect(request, redirect_uri)
 
 @router.get("/login/github")
 async def login_github(request: Request):
-    redirect_uri = "http://localhost:8000/auth/callback/github"
+    redirect_uri = f"{settings.base_url}/auth/callback/github"
     return await github.authorize_redirect(request, redirect_uri)
 
 @router.get("/auth/callback/google")
@@ -120,14 +120,14 @@ async def auth_callback(request: Request, db: Session = Depends(get_db)):
             "email": user.email,
             "profile_picture": user.profile_picture or ""
         })
-        return RedirectResponse(url=f"http://localhost:3000/auth/callback?{params}")
+        return RedirectResponse(url=f"{settings.frontend_url}/auth/callback?{params}")
 
     except Exception as e:
         import logging
         logging.error(f"Google OAuth error: {str(e)}", exc_info=True)
         if "mismatching_state" in str(e):
-            return RedirectResponse(url="http://localhost:3000/login?error=session_expired")
-        return RedirectResponse(url="http://localhost:3000/login?error=auth_failed")
+            return RedirectResponse(url=f"{settings.frontend_url}/login?error=session_expired")
+        return RedirectResponse(url=f"{settings.frontend_url}/login?error=auth_failed")
 
 
 @router.get("/auth/callback/github")
@@ -196,14 +196,14 @@ async def auth_callback_github(request: Request, db: Session = Depends(get_db)):
             "email": user.email,
             "profile_picture": user.profile_picture or ""
         })
-        return RedirectResponse(url=f"http://localhost:3000/auth/callback?{params}")
+        return RedirectResponse(url=f"{settings.frontend_url}/auth/callback?{params}")
 
     except Exception as e:
         import logging
         logging.error(f"GitHub OAuth error: {str(e)}", exc_info=True)
         if "mismatching_state" in str(e):
-            return RedirectResponse(url="http://localhost:3000/login?error=session_expired")
-        return RedirectResponse(url="http://localhost:3000/login?error=auth_failed")
+            return RedirectResponse(url=f"{settings.frontend_url}/login?error=session_expired")
+        return RedirectResponse(url=f"{settings.frontend_url}/login?error=auth_failed")
 
 
 security = HTTPBearer()

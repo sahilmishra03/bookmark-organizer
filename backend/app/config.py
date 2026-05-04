@@ -1,5 +1,6 @@
 from pydantic_settings import BaseSettings
 from pydantic import Field
+import os
 
 
 class Settings(BaseSettings):
@@ -15,6 +16,9 @@ class Settings(BaseSettings):
     github_authorize_url: str = Field(..., env="GITHUB_AUTHORIZE_URL")
     github_access_token_url: str = Field(..., env="GITHUB_ACCESS_TOKEN_URL")
     github_userinfo_endpoint: str = Field(..., env="GITHUB_USERINFO_ENDPOINT")
+    
+    base_url: str = Field(default="http://localhost:8000", env="BASE_URL")
+    frontend_url: str = Field(default="http://localhost:3000", env="FRONTEND_URL")
 
     model_config = {
         "env_file": ".env",
