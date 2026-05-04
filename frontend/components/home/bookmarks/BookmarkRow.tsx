@@ -17,33 +17,40 @@ interface BookmarkRowProps {
 
 export default function BookmarkRow({ title, url, folder, tags = [], starred, time, onDelete, onEdit, onToggleFavorite }: BookmarkRowProps) {
   return (
-    <div className="flex items-center px-5 py-3 hover:bg-neutral-50 dark:hover:bg-neutral-800/50 transition-colors group">
-      <button
-        onClick={onToggleFavorite}
-        className={`text-sm shrink-0 transition-colors mr-3 ${starred ? "text-yellow-400" : "text-neutral-300 dark:text-neutral-600 hover:text-yellow-400"}`}
-      >
-        {starred ? "★" : "☆"}
-      </button>
-      <div className="flex-1 min-w-0">
-        <LinkPreview
-          url={`https://${url}`}
-          className="text-sm font-medium text-neutral-900 dark:text-neutral-100 hover:text-neutral-600 dark:hover:text-neutral-200 transition-colors block truncate"
+    <div className="flex items-center justify-between px-5 py-3 hover:bg-neutral-50 dark:hover:bg-neutral-800/50 transition-colors group">
+      
+      <div className="flex items-center flex-1 min-w-0 pr-4">
+        <button
+          onClick={onToggleFavorite}
+          className={`text-sm shrink-0 transition-colors mr-3 ${starred ? "text-yellow-400" : "text-neutral-300 dark:text-neutral-600 hover:text-yellow-400"}`}
         >
-          {title}
-        </LinkPreview>
-        <div className="mt-1 flex items-center gap-2">
-          <p className="text-xs text-neutral-400 truncate">{url}</p>
-          {tags.map(tag => (
-            <span
-              key={tag}
-              className="text-[11px] px-1.5 py-0.5 rounded bg-neutral-100 dark:bg-neutral-800 text-neutral-500 dark:text-neutral-400 shrink-0"
-            >
-              #{tag}
-            </span>
-          ))}
+          {starred ? "★" : "☆"}
+        </button>
+        
+        <div className="flex-1 min-w-0">
+          <LinkPreview
+            url={`https://${url}`}
+            className="text-sm font-medium text-neutral-900 dark:text-neutral-100 hover:text-neutral-600 dark:hover:text-neutral-200 transition-colors block truncate"
+          >
+            {title}
+          </LinkPreview>
+          <div className="mt-1 flex flex-wrap items-center gap-1.5 min-w-0">
+            <p className="text-xs text-neutral-400 block max-w-full whitespace-nowrap overflow-hidden text-ellipsis">
+              {url}
+            </p>
+            {tags.map(tag => (
+              <span
+                key={tag}
+                className="text-[11px] px-1.5 py-0.5 rounded bg-neutral-100 dark:bg-neutral-800 text-neutral-500 dark:text-neutral-400 shrink-0"
+              >
+                #{tag}
+              </span>
+            ))}
+          </div>
         </div>
       </div>
-      <div className="flex items-center gap-2 shrink-0 ml-4">
+
+      <div className="flex items-center gap-2 shrink-0 ml-2">
         <span className="text-xs px-2 py-0.5 rounded-full bg-neutral-100 dark:bg-neutral-800 text-neutral-500 dark:text-neutral-400 whitespace-nowrap">
           {folder}
         </span>
@@ -51,7 +58,7 @@ export default function BookmarkRow({ title, url, folder, tags = [], starred, ti
         {onEdit && (
           <button
             onClick={onEdit}
-            className="opacity-0 group-hover:opacity-100 transition-opacity text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-200"
+            className="opacity-0 group-hover:opacity-100 transition-opacity text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-200 shrink-0"
           >
             <Pencil size={14} />
           </button>
@@ -59,7 +66,7 @@ export default function BookmarkRow({ title, url, folder, tags = [], starred, ti
         {onDelete && (
           <button
             onClick={onDelete}
-            className="opacity-0 group-hover:opacity-100 transition-opacity text-neutral-400 hover:text-red-500"
+            className="opacity-0 group-hover:opacity-100 transition-opacity text-neutral-400 hover:text-red-500 shrink-0"
           >
             <Trash2 size={14} />
           </button>

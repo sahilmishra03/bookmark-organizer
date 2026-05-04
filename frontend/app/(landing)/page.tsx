@@ -8,8 +8,9 @@ import Upcoming from "@/components/landing/Upcoming"
 
 const page = () => {
   return (
-    <div>
-      <Container className='max-w-[1200px] mx-auto pb-40'>
+    // Added overflow-x-hidden and w-full to prevent horizontal scrolling
+    <div className="overflow-x-hidden w-full relative">
+      <Container className='max-w-[1200px] mx-auto pb-24 md:pb-40 px-4 sm:px-6 md:px-8'>
         <Hero />
         <SyncDevices />
         <BentoGrid />
