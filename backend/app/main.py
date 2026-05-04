@@ -17,16 +17,13 @@ app = FastAPI(
 app.add_middleware(
     SessionMiddleware,
     secret_key=settings.secret_key,
-    same_site="lax",
-    https_only=False
+    same_site="none",
+    https_only=True
 )
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost:3000",
-        "http://127.0.0.1:3000"
-    ],
+    allow_origins=["https://ghostmark.sahilmishra.dev"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
