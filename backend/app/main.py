@@ -2,6 +2,7 @@ from fastapi import FastAPI, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.middleware.sessions import SessionMiddleware
 from sqlalchemy.orm import Session
+from sqlalchemy import text
 from .config import settings
 from .database import engine, get_db
 from . import models
@@ -46,7 +47,7 @@ def root():
 @app.get("/warmup")
 def warmup(db: Session = Depends(get_db)):
     try:
-        db.execute("SELECT 1")
+        db.execute(text("SELECT 1"))
         return {"status": "warm"}
     except Exception as e:
         import logging
@@ -58,7 +59,7 @@ def warmup(db: Session = Depends(get_db)):
 def db_test(db: Session = Depends(get_db)):
     import time
     start_time = time.time()
-    db.execute("SELECT 1")
+    db.execute(text("SELECT 1"))
     end_time = time.time()
     latency_ms = round((end_time - start_time) * 1000, 2)
     return {
