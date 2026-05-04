@@ -1,8 +1,9 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.middleware.sessions import SessionMiddleware
+from sqlalchemy.orm import Session
 from .config import settings
-from .database import engine
+from .database import engine, get_db
 from . import models
 from .routes import auth, protected, folders, bookmarks, search, tags, import_export
 import alembic
@@ -40,3 +41,23 @@ app.include_router(import_export.router)
 @app.get("/")
 def root():
     return {"message": "API running 🚀"}
+
+
+@app.get("/warmup")
+def warmup(db: Session = Depends(get_db)):
+    db.execute("SELECT 1")
+    return {"status": "warm"}
+
+
+@app.get("/db-test")
+def db_test(db: Session = Depends(get_db)):
+    import time
+    start_time = time.time()
+    db.execute("SELECT 1")
+    end_time = time.time()
+    latency_ms = round((end_time - start_time) * 1000, 2)
+    return {
+        "status": "ok",
+        "latency_ms": latency_ms,
+        "message": f"Database query took {latency_ms}ms"
+    }

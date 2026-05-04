@@ -11,7 +11,15 @@ if not DATABASE_URL:
         "Please set it in your .env file or environment variables."
     )
 
-engine = create_engine(DATABASE_URL)
+engine = create_engine(
+    DATABASE_URL,
+    pool_size=5,
+    max_overflow=10,
+    pool_pre_ping=True,
+    pool_recycle=300,
+    connect_args={"sslmode": "require"},
+    echo=False
+)
 
 SessionLocal = sessionmaker(
     autocommit=False,

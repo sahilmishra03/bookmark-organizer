@@ -78,15 +78,13 @@ async def auth_callback(request: Request, db: Session = Depends(get_db)):
                 profile_picture=picture
             )
             db.add(user)
-            db.commit()
-            db.refresh(user)
+            db.flush()  # Get the ID without committing
         else:
             existing_user.name = user_info.get("name")
             picture = user_info.get("picture")
             if picture:
                 picture = picture.replace("=s96-c", "=s200-c")
             existing_user.profile_picture = picture
-            db.commit()
             user = existing_user
 
         access_token = create_access_token({
@@ -100,17 +98,19 @@ async def auth_callback(request: Request, db: Session = Depends(get_db)):
 
         hashed_token = hashlib.sha256(refresh_token.encode()).hexdigest()
 
+        # Revoke old tokens and add new one in a single transaction
         db.query(models.RefreshToken).filter(
             models.RefreshToken.user_id == user.id,
             models.RefreshToken.is_revoked == False
         ).update({"is_revoked": True})
-        db.commit()
-
+        
         db_token = models.RefreshToken(
             user_id=user.id,
             token=hashed_token
         )
         db.add(db_token)
+        
+        # Single commit for all operations
         db.commit()
 
         params = urllib.parse.urlencode({
@@ -157,12 +157,10 @@ async def auth_callback_github(request: Request, db: Session = Depends(get_db)):
                 profile_picture=user_info.get("avatar_url")
             )
             db.add(user)
-            db.commit()
-            db.refresh(user)
+            db.flush()  # Get the ID without committing
         else:
             existing_user.name = user_info.get("name") or user_info.get("login")
             existing_user.profile_picture = user_info.get("avatar_url")
-            db.commit()
             user = existing_user
 
         access_token = create_access_token({
@@ -176,17 +174,19 @@ async def auth_callback_github(request: Request, db: Session = Depends(get_db)):
 
         hashed_token = hashlib.sha256(refresh_token.encode()).hexdigest()
 
+        # Revoke old tokens and add new one in a single transaction
         db.query(models.RefreshToken).filter(
             models.RefreshToken.user_id == user.id,
             models.RefreshToken.is_revoked == False
         ).update({"is_revoked": True})
-        db.commit()
-
+        
         db_token = models.RefreshToken(
             user_id=user.id,
             token=hashed_token
         )
         db.add(db_token)
+        
+        # Single commit for all operations
         db.commit()
 
         params = urllib.parse.urlencode({
