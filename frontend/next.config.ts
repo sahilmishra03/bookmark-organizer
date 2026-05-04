@@ -9,6 +9,10 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: "assets.aceternity.com",
       },
+      {
+        protocol: "https",
+        hostname: "bookmark-organizer-jtx3.onrender.com",
+      },
     ],
     localPatterns: [
       {

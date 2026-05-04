@@ -2,7 +2,7 @@ import axios from 'axios'
 import { useAuthStore } from '@/store/authStore'
 import { getRefreshToken } from '@/lib/tokenUtils'
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://bookmark-organizer-jtx3.onrender.com/'
 
 const api = axios.create({ baseURL: API_URL })
 
