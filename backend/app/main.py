@@ -44,17 +44,6 @@ def root():
     return {"message": "API running 🚀"}
 
 
-@app.get("/warmup")
-def warmup(db: Session = Depends(get_db)):
-    try:
-        db.execute(text("SELECT 1"))
-        return {"status": "warm"}
-    except Exception as e:
-        import logging
-        logging.error(f"Warmup error: {str(e)}", exc_info=True)
-        return {"status": "error", "error": str(e)}
-
-
 @app.get("/db-test")
 def db_test(db: Session = Depends(get_db)):
     import time
@@ -67,8 +56,3 @@ def db_test(db: Session = Depends(get_db)):
         "latency_ms": latency_ms,
         "message": f"Database query took {latency_ms}ms"
     }
-
-
-@app.get("/simple-test")
-def simple_test():
-    return {"status": "ok", "message": "Simple test without database"}
