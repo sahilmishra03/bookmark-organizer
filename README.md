@@ -1,8 +1,8 @@
 <p align="center">
-  <img src="./frontend/public/main-logo.png" alt="Bookmark Organizer Logo" width="80"/>
+  <img src="./frontend/public/main-logo.png" alt="Bookmark Organizer Logo" width="120"/>
 </p>
 
-# Bookmark Organizer
+# Ghostmark
 
 A modern bookmark manager focused on speed, clarity, and organization.
 
@@ -13,28 +13,28 @@ Organize, search, and access your links --- all in one place.
 
 ## Features
 
--   Folder-based organization\
--   Tag system for flexible grouping\
--   Fast and responsive search\
--   Favorites for quick access\
--   Import bookmarks from browser (HTML)\
+-   Folder-based organization
+-   Tag system for flexible grouping
+-   Fast and responsive search
+-   Favorites for quick access
+-   Import bookmarks from browser (HTML)
 -   Export bookmarks in Chrome-compatible format
 
 ------------------------------------------------------------------------
 
 ## Roadmap
 
--   Browser extension for instant saving\
--   Mobile app (Android & iOS)\
+-   Browser extension for instant saving
+-   Mobile app (Android & iOS)
 -   Advanced search and filtering
 
 ------------------------------------------------------------------------
 
 ## Tech Stack
 
--   **Frontend:** Next.js, Tailwind CSS\
--   **Backend:** FastAPI\
--   **Database:** PostgreSQL\
+-   **Frontend:** Next.js, Tailwind CSS
+-   **Backend:** FastAPI
+-   **Database:** PostgreSQL
 -   **Authentication:** Google OAuth + JWT
 
 ------------------------------------------------------------------------
@@ -43,8 +43,8 @@ Organize, search, and access your links --- all in one place.
 
 ### Prerequisites
 
--   Node.js 18+\
--   Python 3.13+\
+-   Node.js 18+
+-   Python 3.13+
 -   PostgreSQL
 
 ------------------------------------------------------------------------
@@ -103,8 +103,8 @@ npm run dev
 
 ### Access
 
--   Frontend → http://localhost:3000\
--   Backend → http://localhost:8000\
+-   Frontend → http://localhost:3000
+-   Backend → http://localhost:8000
 -   API Docs → http://localhost:8000/docs
 
 ------------------------------------------------------------------------
@@ -130,10 +130,10 @@ git push origin main
 
 ## Contributing
 
-1.  Fork the repository\
-2.  Create a branch\
-3.  Commit changes\
-4.  Open a Pull Request
+1. Fork repository
+2. Create a branch
+3. Commit changes
+4. Open a Pull Request
 
 ------------------------------------------------------------------------
 
