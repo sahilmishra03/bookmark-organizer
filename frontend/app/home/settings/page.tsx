@@ -4,9 +4,11 @@ import { useEffect, useState } from "react"
 import { motion } from "framer-motion"
 import { Download, Upload, Globe, AlertCircle, CheckCircle } from "lucide-react"
 import api from "@/lib/api"
+import { useDataStore } from "@/store/dataStore"
 import type { Bookmark, Folder } from "@/lib/types"
 
 export default function SettingsPage() {
+  const { invalidate } = useDataStore()
   const [bookmarks, setBookmarks] = useState<Bookmark[]>([])
   const [folders, setFolders] = useState<Folder[]>([])
   const [loading, setLoading] = useState(true)
@@ -77,6 +79,9 @@ export default function SettingsPage() {
       ])
       setBookmarks(bRes.data)
       setFolders(fRes.data)
+      
+      // Invalidate global data store to refresh other pages
+      invalidate()
 
       setImportResult({
         success: true,
