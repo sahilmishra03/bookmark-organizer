@@ -245,7 +245,7 @@ export const NavbarLogo = () => {
       className="relative z-20 mr-4 flex items-center space-x-2 px-2 py-1 text-sm font-normal text-black"
     >
       <img
-        src={theme === "dark" ? "/favicon-dark.svg" : "/favicon-light.svg"}
+        src={theme === "dark" ? "/logo-dark.svg" : "/logo-light.svg"}
         alt="logo"
         width={30}
         height={30}

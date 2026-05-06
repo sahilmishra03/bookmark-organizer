@@ -77,7 +77,7 @@ const Sidebar = ({ isOpen, setIsOpen, isMobile = false }: SidebarProps) => {
           <div>
             <div className="flex items-center gap-3 px-[14px] py-4 border-b border-dashed border-neutral-200 dark:border-neutral-700">
               <img
-                src={theme === "dark" ? "/favicon-dark.svg" : "/favicon-light.svg"}
+                src={theme === "dark" ? "/logo-dark.svg" : "/logo-light.svg"}
                 alt="logo"
                 width={30}
                 height={30}

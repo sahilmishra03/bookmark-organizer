@@ -10,7 +10,7 @@ const LoginHeader = () => {
         <div className="flex flex-col items-center">
             <div className='text-2xl font-bold flex items-center text-neutral-900 dark:text-white'>
                 <img
-                    src={theme === "dark" ? "/favicon-dark.svg" : "/favicon-light.svg"}
+                    src={theme === "dark" ? "/logo-dark.svg" : "/logo-light.svg"}
                     alt="logo"
                     width={40}
                     height={40}

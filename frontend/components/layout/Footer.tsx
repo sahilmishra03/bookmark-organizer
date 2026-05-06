@@ -40,7 +40,7 @@ const LINKS = [
 export default function Footer() {
   const { theme } = useTheme();
 
-  const logoSrc = theme === "dark" ? "/favicon-dark.svg" : "/favicon-light.svg";
+  const logoSrc = theme === "dark" ? "/logo-dark.svg" : "/logo-light.svg";
 
   return (
     <footer className="relative bg-neutral-100 dark:bg-neutral-950 overflow-hidden">

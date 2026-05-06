@@ -31,7 +31,7 @@ export default function ExtensionWaitlist() {
         <Link href="/" className="flex items-center gap-2 group">
           <div className="h-9 w-9 rounded-lg bg-neutral-200 dark:bg-neutral-800 flex items-center justify-center transition-transform group-hover:scale-105">
             <img
-                src={theme === 'dark' ? '/favicon-dark.svg' : '/favicon-light.svg'}
+                src={theme === 'dark' ? '/logo-dark.svg' : '/logo-light.svg'}
                 alt="logo"
                 width={30}
                 height={30}

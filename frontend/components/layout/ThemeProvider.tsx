@@ -58,11 +58,6 @@ export function ThemeProvider({
 
     root.classList.add(resolvedTheme)
     root.style.colorScheme = resolvedTheme
-
-    // Sync favicon with theme
-    const faviconUrl = resolvedTheme === "dark" ? "/favicon-dark.svg" : "/favicon-light.svg"
-    document.querySelectorAll('link[rel="icon"],link[rel="shortcut icon"],link[rel="apple-touch-icon"]')
-      .forEach((el) => { (el as HTMLLinkElement).href = faviconUrl })
   }, [theme])
 
   const value = useMemo(() => ({
