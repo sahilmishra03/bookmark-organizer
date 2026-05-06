@@ -1,31 +1,42 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import { useRouter } from "next/navigation"
 import FolderCard from "@/components/home/folders/FolderCard"
 import api from "@/lib/api"
-import type { Folder, Bookmark } from "@/lib/types"
+import { useDataStore } from "@/store/dataStore"
+import type { Folder } from "@/lib/types"
 
 const CARD_COLOR = "bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300"
 
+/* ── Skeleton ─────────────────────────────── */
+function SkeletonCards() {
+  return (
+    <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+      {[0, 1, 2, 3, 4, 5].map((i) => (
+        <div
+          key={i}
+          className="rounded-xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 p-5 flex flex-col gap-3 min-h-[120px]"
+        >
+          <div className="h-5 w-5 rounded bg-neutral-200 dark:bg-neutral-700 animate-pulse" />
+          <div className="h-4 w-24 rounded bg-neutral-200 dark:bg-neutral-700 animate-pulse" />
+          <div className="h-3 w-16 rounded bg-neutral-100 dark:bg-neutral-800 animate-pulse" />
+        </div>
+      ))}
+    </div>
+  )
+}
+
 export default function FoldersPage() {
-  const [folders, setFolders] = useState<Folder[]>([])
-  const [bookmarks, setBookmarks] = useState<Bookmark[]>([])
-  const [loading, setLoading] = useState(true)
+  const { folders, bookmarks, isLoaded } = useDataStore()
+  const { addFolder: addFolderToStore, deleteFolder: deleteFolderFromStore } = useDataStore()
+
   const router = useRouter()
   const [showModal, setShowModal] = useState(false)
   const [newName, setNewName] = useState("")
   const [saving, setSaving] = useState(false)
 
-  useEffect(() => {
-    Promise.all([
-      api.get<Folder[]>("/v1/folders"),
-      api.get<Bookmark[]>("/v1/bookmarks/allbookmarks"),
-    ]).then(([fRes, bRes]) => {
-      setFolders(fRes.data)
-      setBookmarks(bRes.data)
-    }).finally(() => setLoading(false))
-  }, [])
+  const loading = !isLoaded
 
   const countMap = Object.fromEntries(
     folders.map(f => [f.id, bookmarks.filter(b => b.folder_id === f.id).length])
@@ -36,7 +47,7 @@ export default function FoldersPage() {
     setSaving(true)
     try {
       const { data } = await api.post<Folder>("/v1/folders", { name: newName.trim() })
-      setFolders(prev => [...prev, data])
+      addFolderToStore(data)
       setShowModal(false)
       setNewName("")
     } finally {
@@ -46,27 +57,26 @@ export default function FoldersPage() {
 
   const handleDelete = async (id: string) => {
     await api.delete(`/v1/folders/${id}`)
-    setFolders(prev => prev.filter(f => f.id !== id))
-    setBookmarks(prev => prev.filter(b => b.folder_id !== id))
+    deleteFolderFromStore(id)
   }
 
   return (
     <div className="p-6">
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 sm:gap-0 mb-6">
         <div>
           <h1 className="text-2xl font-bold text-neutral-900 dark:text-neutral-100 mb-1">Folders</h1>
           <p className="text-neutral-500 dark:text-neutral-400 text-sm">Organise bookmarks into folders</p>
         </div>
         <button
           onClick={() => setShowModal(true)}
-          className="px-4 py-2 rounded-lg bg-neutral-900 dark:bg-neutral-100 hover:opacity-90 text-white dark:text-neutral-900 text-sm font-medium transition-opacity"
+          className="px-4 py-2 rounded-lg bg-neutral-900 dark:bg-neutral-100 hover:opacity-90 text-white dark:text-neutral-900 text-sm font-medium transition-opacity shrink-0"
         >
           + New Folder
         </button>
       </div>
 
       {loading ? (
-        <p className="text-sm text-neutral-400 py-8 text-center">Loading…</p>
+        <SkeletonCards />
       ) : (
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
           {folders.map(f => (

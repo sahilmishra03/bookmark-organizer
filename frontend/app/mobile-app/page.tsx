@@ -1,19 +1,15 @@
 "use client"
 
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import Link from 'next/link'
 import { useTheme } from '@/components/layout/ThemeProvider'
 import { Phone } from '@/components/landing/Devices'
+
 
 export default function MobileAppWaitlist() {
   const [email, setEmail] = useState('')
   const [submitted, setSubmitted] = useState(false)
   const { theme } = useTheme()
-  const [mounted, setMounted] = useState(false)
-
-  useEffect(() => {
-    setMounted(true)
-  }, [])
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
@@ -34,16 +30,12 @@ export default function MobileAppWaitlist() {
       <nav className="max-w-7xl mx-auto w-full px-4 md:px-8 py-6 relative z-10 flex items-center justify-between">
         <Link href="/" className="flex items-center gap-2 group">
           <div className="h-9 w-9 rounded-lg bg-neutral-200 dark:bg-neutral-800 flex items-center justify-center transition-transform group-hover:scale-105">
-            {mounted ? (
-              <img
+            <img
                 src={theme === 'dark' ? '/favicon-dark.svg' : '/favicon-light.svg'}
                 alt="logo"
                 width={30}
                 height={30}
               />
-            ) : (
-              <div className="w-[30px] h-[30px]" />
-            )}
           </div>
           <span className="text-xl font-bold tracking-tight text-neutral-900 dark:text-white">Ghostmark</span>
         </Link>

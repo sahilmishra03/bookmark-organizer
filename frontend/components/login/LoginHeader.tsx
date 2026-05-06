@@ -1,23 +1,16 @@
 "use client"
 
-import React, { useState, useEffect } from 'react'
+import React from 'react'
 import { useTheme } from '@/components/layout/ThemeProvider'
 
 const LoginHeader = () => {
-    const [mounted, setMounted] = useState(false)
     const { theme } = useTheme()
-
-    useEffect(() => setMounted(true), [])
-
-    const logoSrc = mounted 
-        ? (theme === "dark" ? "/favicon-dark.svg" : "/favicon-light.svg")
-        : "/favicon-light.svg"
 
     return (
         <div className="flex flex-col items-center">
             <div className='text-2xl font-bold flex items-center text-neutral-900 dark:text-white'>
                 <img
-                    src={logoSrc}
+                    src={theme === "dark" ? "/favicon-dark.svg" : "/favicon-light.svg"}
                     alt="logo"
                     width={40}
                     height={40}

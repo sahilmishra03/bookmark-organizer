@@ -35,7 +35,7 @@ const releaseNotes = [
 
 export default function Upcoming() {
   return (
-    <section className="mt-20 md:mt-40 flex flex-col items-center gap-4 px-4 md:px-0">
+    <section className="mt-16 md:mt-24 flex flex-col items-center gap-4 px-4 md:px-0">
       <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-center">
         Upcoming
       </h2>

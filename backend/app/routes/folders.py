@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends, status, HTTPException, Response
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from uuid import UUID
 
@@ -60,7 +60,9 @@ def get_folder_bookmarks(folder_id: UUID, user=Depends(get_current_user), db: Se
     if not folder:
         raise HTTPException(status_code=404, detail="Folder not found")
 
-    return db.query(BookmarkModel).filter(
+    return db.query(BookmarkModel).options(
+        joinedload(BookmarkModel.tags)
+    ).filter(
         BookmarkModel.folder_id == folder_id
     ).all()
 

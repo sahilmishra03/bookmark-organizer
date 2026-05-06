@@ -1,26 +1,31 @@
 "use client"
 
-import { useEffect, useState } from "react"
 import FavoriteRow from "@/components/home/favorites/FavoriteRow"
-import api from "@/lib/api"
+import { useDataStore } from "@/store/dataStore"
 import { timeAgo, stripProtocol } from "@/lib/timeUtils"
-import type { Bookmark, Folder } from "@/lib/types"
+
+/* ── Skeleton ─────────────────────────────── */
+function SkeletonRows() {
+  return (
+    <>
+      {[0, 1, 2, 3].map((i) => (
+        <div key={i} className="flex items-center gap-4 px-5 py-4">
+          <div className="h-4 w-4 rounded bg-neutral-200 dark:bg-neutral-700 animate-pulse shrink-0" />
+          <div className="flex-1 flex flex-col gap-2">
+            <div className="h-4 w-48 rounded bg-neutral-200 dark:bg-neutral-700 animate-pulse" />
+            <div className="h-3 w-64 rounded bg-neutral-100 dark:bg-neutral-800 animate-pulse" />
+          </div>
+          <div className="h-3 w-12 rounded bg-neutral-200 dark:bg-neutral-700 animate-pulse shrink-0" />
+        </div>
+      ))}
+    </>
+  )
+}
 
 export default function FavoritesPage() {
-  const [favorites, setFavorites] = useState<Bookmark[]>([])
-  const [folders, setFolders] = useState<Folder[]>([])
-  const [loading, setLoading] = useState(true)
+  const { favorites, folders, isLoaded } = useDataStore()
 
-  useEffect(() => {
-    Promise.all([
-      api.get<Bookmark[]>("/v1/bookmarks/favorites"),
-      api.get<Folder[]>("/v1/folders"),
-    ]).then(([favRes, fRes]) => {
-      setFavorites(favRes.data)
-      setFolders(fRes.data)
-    }).finally(() => setLoading(false))
-  }, [])
-
+  const loading = !isLoaded
   const folderMap = Object.fromEntries(folders.map(f => [f.id, f.name]))
 
   return (
@@ -30,7 +35,7 @@ export default function FavoritesPage() {
 
       <div className="rounded-xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 divide-y divide-neutral-100 dark:divide-neutral-800">
         {loading ? (
-          <p className="text-sm text-neutral-400 px-5 py-8 text-center">Loading…</p>
+          <SkeletonRows />
         ) : favorites.length === 0 ? (
           <p className="text-sm text-neutral-400 px-5 py-8 text-center">No favorites yet — star a bookmark to see it here</p>
         ) : favorites.map(b => (

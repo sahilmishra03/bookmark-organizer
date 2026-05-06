@@ -28,6 +28,7 @@ interface NavItemsProps {
   items: {
     name: string;
     link: string;
+    icon?: React.ReactNode;
   }[];
   className?: string;
   onItemClick?: () => void;
@@ -140,7 +141,10 @@ export const NavItems = ({ items, className, onItemClick }: NavItemsProps) => {
               className="absolute inset-0 h-full w-full rounded-full bg-gray-100 dark:bg-neutral-800"
             />
           )}
-          <span className="relative z-20">{item.name}</span>
+          <span className="relative z-20 flex items-center gap-1.5">
+            {item.icon}
+            {item.name}
+          </span>
         </Link>
       ))}
     </motion.div>
@@ -233,17 +237,7 @@ export const MobileNavToggle = ({
 };
 
 export const NavbarLogo = () => {
-  const [mounted, setMounted] = React.useState(false);
   const { theme } = useTheme();
-
-  React.useEffect(() => setMounted(true), []);
-  React.useEffect(() => {
-    // Force re-render when theme changes
-  }, [theme]);
-
-  const logoSrc = mounted 
-    ? (theme === "dark" ? "/favicon-dark.svg" : "/favicon-light.svg")
-    : "/favicon-light.svg";
 
   return (
     <Link
@@ -251,7 +245,7 @@ export const NavbarLogo = () => {
       className="relative z-20 mr-4 flex items-center space-x-2 px-2 py-1 text-sm font-normal text-black"
     >
       <img
-        src={logoSrc}
+        src={theme === "dark" ? "/favicon-dark.svg" : "/favicon-light.svg"}
         alt="logo"
         width={30}
         height={30}

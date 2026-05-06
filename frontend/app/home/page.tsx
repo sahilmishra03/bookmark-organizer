@@ -1,55 +1,81 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import Link from "next/link"
 import { motion } from "framer-motion"
 import { Bookmark, Folder, Hash, Star } from "lucide-react"
 import StatCard from "@/components/home/dashboard/StatCard"
 import RecentBookmarkRow from "@/components/home/dashboard/RecentBookmarkRow"
 import api from "@/lib/api"
-import { buildTrend, buildRealTrend, generateMockTrend, timeAgo, stripProtocol } from "@/lib/timeUtils"
+import { useDataStore } from "@/store/dataStore"
+import { buildRealTrend, generateMockTrend, timeAgo, stripProtocol } from "@/lib/timeUtils"
 import { parseTagInput } from "@/lib/utils"
-import type { Bookmark as BookmarkType, Folder as FolderType } from "@/lib/types"
+import type { Bookmark as BookmarkType } from "@/lib/types"
 
 const container = {
   hidden: {},
   show: { transition: { staggerChildren: 0.08 } },
 }
 
+/* ── Skeleton helpers ─────────────────────────────── */
+function SkeletonStatCards() {
+  return (
+    <div className="grid grid-cols-1 sm:grid-cols-3 mb-8 rounded-xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 overflow-hidden">
+      {[0, 1, 2].map((i) => (
+        <div
+          key={i}
+          className={`p-5 flex flex-col gap-3 ${i < 2 ? "border-b sm:border-b-0 sm:border-r border-neutral-200 dark:border-neutral-800" : ""}`}
+        >
+          <div className="flex items-center gap-2">
+            <div className="h-4 w-4 rounded bg-neutral-200 dark:bg-neutral-700 animate-pulse" />
+            <div className="h-3 w-24 rounded bg-neutral-200 dark:bg-neutral-700 animate-pulse" />
+          </div>
+          <div className="h-7 w-16 rounded bg-neutral-200 dark:bg-neutral-700 animate-pulse" />
+          <div className="h-10 w-full rounded bg-neutral-100 dark:bg-neutral-800 animate-pulse" />
+        </div>
+      ))}
+    </div>
+  )
+}
+
+function SkeletonBookmarkRows() {
+  return (
+    <div className="divide-y divide-neutral-100 dark:divide-neutral-800">
+      {[0, 1, 2, 3, 4].map((i) => (
+        <div key={i} className="flex items-center gap-4 px-5 py-4">
+          <div className="h-4 w-4 rounded bg-neutral-200 dark:bg-neutral-700 animate-pulse shrink-0" />
+          <div className="flex-1 flex flex-col gap-2">
+            <div className="h-4 w-48 rounded bg-neutral-200 dark:bg-neutral-700 animate-pulse" />
+            <div className="h-3 w-64 rounded bg-neutral-100 dark:bg-neutral-800 animate-pulse" />
+          </div>
+          <div className="h-3 w-12 rounded bg-neutral-200 dark:bg-neutral-700 animate-pulse shrink-0" />
+        </div>
+      ))}
+    </div>
+  )
+}
+
 export default function DashboardPage() {
-  const [bookmarks, setBookmarks] = useState<BookmarkType[]>([])
-  const [folders, setFolders] = useState<FolderType[]>([])
-  const [favorites, setFavorites] = useState<BookmarkType[]>([])
-  const [loading, setLoading] = useState(true)
+  const { bookmarks, folders, favorites, isLoaded } = useDataStore()
+  const addBookmarkToStore = useDataStore((s) => s.addBookmark)
+
   const [showAddModal, setShowAddModal] = useState(false)
   const [showAllTags, setShowAllTags] = useState(false)
   const [addForm, setAddForm] = useState({ title: "", url: "", description: "", folder_id: "", tags: "" })
   const [saving, setSaving] = useState(false)
 
-  useEffect(() => {
-    Promise.all([
-      api.get<BookmarkType[]>("/v1/bookmarks/allbookmarks"),
-      api.get<FolderType[]>("/v1/folders"),
-      api.get<BookmarkType[]>("/v1/bookmarks/favorites"),
-    ]).then(([bRes, fRes, favRes]) => {
-      setBookmarks(bRes.data)
-      setFolders(fRes.data)
-      setFavorites(favRes.data)
-      if (fRes.data.length > 0) setAddForm(f => ({ ...f, folder_id: fRes.data[0].id }))
-    }).finally(() => setLoading(false))
-  }, [])
-
   const folderMap = Object.fromEntries(folders.map(f => [f.id, f.name]))
 
   const handleAdd = async () => {
-    if (!addForm.title.trim() || !addForm.url.trim() || !addForm.folder_id) return
+    const folderId = addForm.folder_id || (folders.length > 0 ? folders[0].id : "")
+    if (!addForm.title.trim() || !addForm.url.trim() || !folderId) return
     setSaving(true)
     try {
       const { data } = await api.post<BookmarkType>(
-        `/v1/bookmarks/folders/${addForm.folder_id}/bookmarks`,
-        { title: addForm.title, url: addForm.url, description: addForm.description || null, favorite: false, folder_id: addForm.folder_id, tags: parseTagInput(addForm.tags) }
+        `/v1/bookmarks/folders/${folderId}/bookmarks`,
+        { title: addForm.title, url: addForm.url, description: addForm.description || null, favorite: false, folder_id: folderId, tags: parseTagInput(addForm.tags) }
       )
-      setBookmarks(prev => [data, ...prev])
+      addBookmarkToStore(data)
       setShowAddModal(false)
       setAddForm(f => ({ ...f, title: "", url: "", description: "", tags: "" }))
     } finally {
@@ -86,9 +112,11 @@ export default function DashboardPage() {
 
   const visibleTags = showAllTags ? latestTags : latestTags.slice(0, 3)
 
+  const loading = !isLoaded
+
   return (
     <div className="p-4 sm:p-6 min-h-screen">
-      <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.35 }} className="flex items-center justify-between mb-8">
+      <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.35 }} className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 sm:gap-0 mb-8">
         <div>
           <h1 className="text-2xl font-bold text-neutral-900 dark:text-neutral-100 mb-1">Dashboard</h1>
           <p className="text-neutral-500 dark:text-neutral-400 text-sm">Overview of your bookmarks and folders</p>
@@ -101,18 +129,22 @@ export default function DashboardPage() {
         </button>
       </motion.div>
 
-      <motion.div
-        variants={container}
-        initial="hidden"
-        animate="show"
-        className="grid grid-cols-1 sm:grid-cols-3 mb-8 rounded-xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 overflow-hidden"
-      >
-        {stats.map((stat, i) => (
-          <StatCard key={stat.label} {...stat} index={i} />
-        ))}
-      </motion.div>
+      {loading ? (
+        <SkeletonStatCards />
+      ) : (
+        <motion.div
+          variants={container}
+          initial="hidden"
+          animate="show"
+          className="grid grid-cols-1 sm:grid-cols-3 mb-8 rounded-xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 overflow-hidden"
+        >
+          {stats.map((stat, i) => (
+            <StatCard key={stat.label} {...stat} index={i} />
+          ))}
+        </motion.div>
+      )}
 
-      {latestTags.length > 0 && (
+      {!loading && latestTags.length > 0 && (
         <motion.nav
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
@@ -153,7 +185,7 @@ export default function DashboardPage() {
           Recent Bookmarks
         </p>
         {loading ? (
-          <p className="text-sm text-neutral-400 px-5 py-8 text-center">Loading…</p>
+          <SkeletonBookmarkRows />
         ) : recent.length === 0 ? (
           <p className="text-sm text-neutral-400 px-5 py-8 text-center">No bookmarks yet</p>
         ) : (
@@ -191,7 +223,7 @@ export default function DashboardPage() {
                 className="px-3 py-2 rounded-lg border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-sm outline-none focus:ring-2 focus:ring-neutral-400 text-neutral-900 dark:text-neutral-100 placeholder:text-neutral-400"
               />
               <select
-                value={addForm.folder_id}
+                value={addForm.folder_id || (folders.length > 0 ? folders[0].id : "")}
                 onChange={e => setAddForm(f => ({ ...f, folder_id: e.target.value }))}
                 className="px-3 py-2 rounded-lg border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-sm outline-none focus:ring-2 focus:ring-neutral-400 text-neutral-900 dark:text-neutral-100"
               >
@@ -215,7 +247,7 @@ export default function DashboardPage() {
               <button onClick={() => setShowAddModal(false)} className="px-4 py-2 text-sm text-neutral-500 hover:text-neutral-700 dark:hover:text-neutral-300">Cancel</button>
               <button
                 onClick={handleAdd}
-                disabled={saving || !addForm.folder_id}
+                disabled={saving || folders.length === 0}
                 className="px-4 py-2 rounded-lg bg-neutral-900 dark:bg-neutral-100 text-white dark:text-neutral-900 text-sm font-medium hover:opacity-90 disabled:opacity-50"
               >
                 {saving ? "Saving…" : "Add"}

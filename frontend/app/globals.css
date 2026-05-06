@@ -4,15 +4,14 @@
 
 html {
   scroll-behavior: smooth;
-  color-scheme: dark;
 }
 
-/* Prevent theme flash by setting initial dark colors */
-:root {
-  color-scheme: dark;
-  background: oklch(0.145 0 0);
-  color: oklch(0.985 0 0);
-}
+/* 
+  Theme colors are applied via .dark (default :root) and .light classes.
+  The blocking script in layout.tsx sets the correct class before first paint,
+  so there is no flash. Do NOT add color-scheme or background here — 
+  that would override the user's stored theme and cause a flash.
+*/
 
 /* Hide scrollbar for Chrome, Safari and Opera */
 html::-webkit-scrollbar {
@@ -81,6 +80,7 @@ body {
 }
 
 :root {
+  color-scheme: dark;
   --background: oklch(0.145 0 0);
   --foreground: oklch(0.985 0 0);
   --card: oklch(0.205 0 0);
@@ -116,6 +116,7 @@ body {
 }
 
 .light {
+  color-scheme: light;
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
   --card: oklch(1 0 0);

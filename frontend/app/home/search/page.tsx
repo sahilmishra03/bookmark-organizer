@@ -3,8 +3,9 @@
 import { useEffect, useState } from "react"
 import SearchResultRow from "@/components/home/search/SearchResultRow"
 import api from "@/lib/api"
+import { useDataStore } from "@/store/dataStore"
 import { stripProtocol } from "@/lib/timeUtils"
-import type { Bookmark, Folder } from "@/lib/types"
+import type { Bookmark } from "@/lib/types"
 
 function useDebounce<T>(value: T, delay: number): T {
   const [debounced, setDebounced] = useState(value)
@@ -18,19 +19,16 @@ function useDebounce<T>(value: T, delay: number): T {
 export default function SearchPage() {
   const [query, setQuery] = useState("")
   const [results, setResults] = useState<Bookmark[]>([])
-  const [folders, setFolders] = useState<Folder[]>([])
   const [loading, setLoading] = useState(false)
   const [searched, setSearched] = useState(false)
   const debouncedQuery = useDebounce(query, 300)
+
+  const folders = useDataStore((s) => s.folders)
 
   useEffect(() => {
     const initialQuery = new URLSearchParams(window.location.search).get("q")
     if (!initialQuery) return
     queueMicrotask(() => setQuery(initialQuery))
-  }, [])
-
-  useEffect(() => {
-    api.get<Folder[]>("/v1/folders").then(r => setFolders(r.data))
   }, [])
 
   useEffect(() => {

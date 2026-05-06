@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends, Body, status, HTTPException, Response
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from uuid import UUID
 
@@ -181,7 +181,9 @@ def get_favorite_bookmarks(
 ):
     user_id = user["user_id"]
 
-    bookmarks = db.query(Bookmark).join(Folder).filter(
+    bookmarks = db.query(Bookmark).join(Folder).options(
+        joinedload(Bookmark.tags)
+    ).filter(
         Bookmark.favorite == True,
         Folder.user_id == user_id
     ).all()
@@ -196,7 +198,9 @@ def get_all_bookmarks(
 ):
     user_id = user["user_id"]
 
-    bookmarks = db.query(Bookmark).join(Folder).filter(
+    bookmarks = db.query(Bookmark).join(Folder).options(
+        joinedload(Bookmark.tags)
+    ).filter(
         Folder.user_id == user_id
     ).all()
 

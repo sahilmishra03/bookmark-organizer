@@ -2,7 +2,7 @@ import Link from "next/link"
 
 export default function CTA() {
   return (
-    <section className="mt-24 md:mt-40 flex flex-col items-center gap-6 text-center px-6 md:px-12 py-16 md:py-24 border border-dashed border-neutral-200 dark:border-neutral-800 rounded-2xl w-full">
+    <section className="mt-16 md:mt-24 flex flex-col items-center gap-6 text-center px-6 md:px-12 py-16 md:py-24 border border-dashed border-neutral-200 dark:border-neutral-800 rounded-2xl w-full">
       <h2 className="text-3xl sm:text-4xl md:text-6xl font-bold tracking-tight leading-[1.1] max-w-3xl">
         Start saving smarter.<br />
         Never lose a link again.

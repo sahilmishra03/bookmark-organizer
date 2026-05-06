@@ -5,6 +5,7 @@ import { useParams, useRouter } from "next/navigation"
 import { ArrowLeft } from "lucide-react"
 import BookmarkRow from "@/components/home/bookmarks/BookmarkRow"
 import api from "@/lib/api"
+import { useDataStore } from "@/store/dataStore"
 import type { Bookmark, Folder } from "@/lib/types"
 import { timeAgo, stripProtocol } from "@/lib/timeUtils"
 import { formatTagInput, parseTagInput } from "@/lib/utils"
@@ -14,7 +15,12 @@ type EditForm = { title: string; url: string; description: string; favorite: boo
 export default function FolderDetailPage() {
   const { id } = useParams<{ id: string }>()
   const router = useRouter()
-  const [folder, setFolder] = useState<Folder | null>(null)
+
+  // Try to get folder info from the shared store (instant if already loaded)
+  const storeFolder = useDataStore((s) => s.folders.find((f) => f.id === id))
+  const { addBookmark: addBookmarkToStore, updateBookmark, deleteBookmark: deleteBookmarkFromStore } = useDataStore()
+
+  const [folder, setFolder] = useState<Folder | null>(storeFolder ?? null)
   const [bookmarks, setBookmarks] = useState<Bookmark[]>([])
   const [loading, setLoading] = useState(true)
   const [editTarget, setEditTarget] = useState<Bookmark | null>(null)
@@ -23,19 +29,26 @@ export default function FolderDetailPage() {
   const [showAddModal, setShowAddModal] = useState(false)
   const [addForm, setAddForm] = useState({ title: "", url: "", description: "", tags: "" })
 
+  // Update folder from store if it arrives later
   useEffect(() => {
+    if (storeFolder && !folder) setFolder(storeFolder)
+  }, [storeFolder, folder])
+
+  useEffect(() => {
+    // Fetch folder-specific bookmarks (these aren't necessarily in the global store)
     Promise.all([
-      api.get<Folder>(`/v1/folders/${id}`),
+      folder ? Promise.resolve({ data: folder }) : api.get<Folder>(`/v1/folders/${id}`),
       api.get<Bookmark[]>(`/v1/folders/${id}/bookmarks`),
     ]).then(([fRes, bRes]) => {
       setFolder(fRes.data)
       setBookmarks(bRes.data)
     }).finally(() => setLoading(false))
-  }, [id])
+  }, [id, folder])
 
   const handleDelete = async (b: Bookmark) => {
     await api.delete(`/v1/bookmarks/folders/${b.folder_id}/bookmarks/${b.id}`)
     setBookmarks(prev => prev.filter(x => x.id !== b.id))
+    deleteBookmarkFromStore(b.id)
   }
 
   const handleToggleFavorite = async (b: Bookmark) => {
@@ -44,6 +57,7 @@ export default function FolderDetailPage() {
       { title: b.title, url: b.url, description: b.description, favorite: !b.favorite, tags: b.tags }
     )
     setBookmarks(prev => prev.map(x => x.id === b.id ? data : x))
+    updateBookmark(data)
   }
 
   const handleAdd = async () => {
@@ -55,6 +69,7 @@ export default function FolderDetailPage() {
         { title: addForm.title, url: addForm.url, description: addForm.description || null, favorite: false, folder_id: id, tags: parseTagInput(addForm.tags) }
       )
       setBookmarks(prev => [data, ...prev])
+      addBookmarkToStore(data)
       setShowAddModal(false)
       setAddForm({ title: "", url: "", description: "", tags: "" })
     } finally {
@@ -76,6 +91,7 @@ export default function FolderDetailPage() {
         { title: editForm.title, url: editForm.url, description: editForm.description || null, favorite: editForm.favorite, tags: parseTagInput(editForm.tags) }
       )
       setBookmarks(prev => prev.map(x => x.id === editTarget.id ? data : x))
+      updateBookmark(data)
       setEditTarget(null)
     } finally {
       setSaving(false)
@@ -95,7 +111,7 @@ export default function FolderDetailPage() {
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-2xl font-bold text-neutral-900 dark:text-neutral-100 mb-1">
-            {loading ? "Loading…" : (folder?.name ?? "Folder")}
+            {loading && !folder ? "Loading…" : (folder?.name ?? "Folder")}
           </h1>
           <p className="text-neutral-500 dark:text-neutral-400 text-sm">
             {bookmarks.length} bookmark{bookmarks.length !== 1 ? "s" : ""}

@@ -2,7 +2,7 @@
 import { motion, AnimatePresence } from "framer-motion"
 import { ArrowBigLeft, ArrowBigRight, BookmarkIcon, Home, Settings, Folder, Star, Sun, Moon, Search, Bookmark } from "lucide-react"
 import { useTheme } from "@/components/layout/ThemeProvider"
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import { usePathname, useRouter } from "next/navigation"
 import { useAuthStore } from "@/store/authStore"
 
@@ -24,19 +24,9 @@ interface SidebarProps {
 const Sidebar = ({ isOpen, setIsOpen, isMobile = false }: SidebarProps) => {
   const [hovering, setIsHovering] = useState(false)
   const { theme, setTheme } = useTheme()
-  const [mounted, setMounted] = useState(false)
   const pathname = usePathname()
   const router = useRouter()
   const user = useAuthStore((s) => s.user)
-
-  useEffect(() => {
-    setMounted(true)
-    // Debug: Log user profile picture
-    console.log('Sidebar user profile picture:', user?.profile_picture)
-  }, [user?.profile_picture])
-  useEffect(() => {
-    // Force re-render when theme changes
-  }, [theme])
 
   return (
     <>
@@ -87,7 +77,7 @@ const Sidebar = ({ isOpen, setIsOpen, isMobile = false }: SidebarProps) => {
           <div>
             <div className="flex items-center gap-3 px-[14px] py-4 border-b border-dashed border-neutral-200 dark:border-neutral-700">
               <img
-                src={mounted ? (theme === "dark" ? "/favicon-dark.svg" : "/favicon-light.svg") : "/favicon-light.svg"}
+                src={theme === "dark" ? "/favicon-dark.svg" : "/favicon-light.svg"}
                 alt="logo"
                 width={30}
                 height={30}
@@ -194,7 +184,7 @@ const Sidebar = ({ isOpen, setIsOpen, isMobile = false }: SidebarProps) => {
               onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
               className="w-full flex cursor-pointer items-center gap-2 px-[14px] p-4 text-neutral-600 dark:text-neutral-300 text-sm font-medium hover:bg-neutral-100 dark:hover:bg-neutral-900"
             >
-              {mounted ? (theme === "dark" ? <Sun size={16} className="shrink-0" /> : <Moon size={16} className="shrink-0" />) : <Moon size={16} className="shrink-0" />}
+              {theme === "dark" ? <Sun size={16} className="shrink-0" /> : <Moon size={16} className="shrink-0" />}
               <AnimatePresence>
                 {(isOpen || isMobile) && (
                   <motion.span
@@ -204,7 +194,7 @@ const Sidebar = ({ isOpen, setIsOpen, isMobile = false }: SidebarProps) => {
                     transition={{ duration: 0.15 }}
                     className="whitespace-nowrap"
                   >
-                    {mounted ? (theme === "dark" ? "Light mode" : "Dark mode") : "Dark mode"}
+                    {theme === "dark" ? "Light mode" : "Dark mode"}
                   </motion.span>
                 )}
               </AnimatePresence>

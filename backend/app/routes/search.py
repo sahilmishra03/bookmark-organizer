@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends, Query, HTTPException, status
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 from sqlalchemy import func
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from enum import Enum
@@ -58,7 +58,9 @@ def search_bookmarks(
             detail="Provide folder_name, bookmark_title, or tag"
         )
 
-    query = db.query(Bookmark).join(Folder).filter(
+    query = db.query(Bookmark).join(Folder).options(
+        joinedload(Bookmark.tags)
+    ).filter(
         Folder.user_id == user_id
     )
 

@@ -4,7 +4,7 @@ const VIDEO_SRC = "https://pub-3b2ce5759e8b401ba99b5a001278e200.r2.dev/Final%20E
 
 const Demo = () => {
   return (
-    <section className="mt-20 md:mt-40 flex flex-col items-center gap-4 px-4 md:px-0">
+    <section className="mt-16 md:mt-24 flex flex-col items-center gap-4 px-4 md:px-0">
       <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-center">
         See Ghostmark in action
       </h2>

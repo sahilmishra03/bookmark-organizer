@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import { useTheme } from "@/components/layout/ThemeProvider";
-import React, { useEffect, useState } from "react";
+import React from "react";
 
 const LINKS = [
   {
@@ -38,17 +38,9 @@ const LINKS = [
 ]
 
 export default function Footer() {
-  const [mounted, setMounted] = useState(false);
   const { theme } = useTheme();
 
-  useEffect(() => setMounted(true), []);
-  useEffect(() => {
-    // Force re-render when theme changes
-  }, [theme]);
-
-  const logoSrc = mounted 
-    ? (theme === "dark" ? "/favicon-dark.svg" : "/favicon-light.svg")
-    : "/favicon-light.svg";
+  const logoSrc = theme === "dark" ? "/favicon-dark.svg" : "/favicon-light.svg";
 
   return (
     <footer className="relative bg-neutral-100 dark:bg-neutral-950 overflow-hidden">

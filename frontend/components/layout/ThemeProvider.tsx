@@ -1,6 +1,6 @@
 "use client"
 
-import { createContext, useContext, useEffect, useState } from "react"
+import { createContext, useContext, useEffect, useState, useMemo } from "react"
 
 type Theme = "dark" | "light" | "system"
 
@@ -22,50 +22,56 @@ const initialState: ThemeProviderState = {
 
 const ThemeProviderContext = createContext<ThemeProviderState>(initialState)
 
+// Read theme synchronously from localStorage to avoid a flash.
+// The blocking script in layout.tsx already applied the class before paint,
+// this just keeps React state in sync.
+function getInitialTheme(storageKey: string, fallback: Theme): Theme {
+  if (typeof window === "undefined") return fallback
+  try {
+    const stored = localStorage.getItem(storageKey) as Theme
+    if (stored === "dark" || stored === "light" || stored === "system") return stored
+  } catch {}
+  return fallback
+}
+
 export function ThemeProvider({
   children,
   defaultTheme = "dark",
   storageKey = "ui-theme",
   ...props
 }: ThemeProviderProps) {
-  const [theme, setTheme] = useState<Theme>(defaultTheme)
-  const [mounted, setMounted] = useState(false)
+  const [theme, setTheme] = useState<Theme>(() => getInitialTheme(storageKey, defaultTheme))
 
   useEffect(() => {
-    setMounted(true)
-    const storedTheme = localStorage.getItem(storageKey) as Theme
-    if (storedTheme) {
-      setTheme(storedTheme)
-    }
-  }, [])
-
-  useEffect(() => {
-    if (!mounted) return
-    
     const root = window.document.documentElement
     root.classList.remove("light", "dark")
 
+    let resolvedTheme: string
     if (theme === "system") {
-      const systemTheme = window.matchMedia("(prefers-color-scheme: dark)")
+      resolvedTheme = window.matchMedia("(prefers-color-scheme: dark)")
         .matches
         ? "dark"
         : "light"
-      root.classList.add(systemTheme)
     } else {
-      root.classList.add(theme)
+      resolvedTheme = theme
     }
-    
-    // Mark theme as loaded to remove forced dark styles
-    root.classList.add("theme-loaded")
-  }, [theme, mounted])
 
-  const value = {
+    root.classList.add(resolvedTheme)
+    root.style.colorScheme = resolvedTheme
+
+    // Sync favicon with theme
+    const faviconUrl = resolvedTheme === "dark" ? "/favicon-dark.svg" : "/favicon-light.svg"
+    document.querySelectorAll('link[rel="icon"],link[rel="shortcut icon"],link[rel="apple-touch-icon"]')
+      .forEach((el) => { (el as HTMLLinkElement).href = faviconUrl })
+  }, [theme])
+
+  const value = useMemo(() => ({
     theme,
-    setTheme: (theme: Theme) => {
-      localStorage.setItem(storageKey, theme)
-      setTheme(theme)
+    setTheme: (newTheme: Theme) => {
+      localStorage.setItem(storageKey, newTheme)
+      setTheme(newTheme)
     },
-  }
+  }), [theme, storageKey])
 
   return (
     <ThemeProviderContext.Provider {...props} value={value}>

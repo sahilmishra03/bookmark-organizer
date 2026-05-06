@@ -1,24 +1,22 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import { useTheme } from "@/components/layout/ThemeProvider"
-import { Sun, Moon } from "lucide-react"
+import { Sun, Moon, Home, Sparkles, Info } from "lucide-react"
 import {
     Navbar, NavBody, NavItems, NavbarLogo, NavbarButton,
     MobileNav, MobileNavHeader, MobileNavMenu, MobileNavToggle,
 } from "@/components/ui/resizable-navbar"
 
 const navItems = [
-    { name: "Features", link: "#features" },
-    { name: "About", link: "/about" },
+    { name: "Home", link: "/", icon: <Home className="w-4 h-4" /> },
+    { name: "Features", link: "#features", icon: <Sparkles className="w-4 h-4" /> },
+    { name: "About", link: "/about", icon: <Info className="w-4 h-4" /> },
 ]
 
 export default function AppNavbar() {
     const [open, setOpen] = useState(false)
-    const [mounted, setMounted] = useState(false)
     const { theme, setTheme } = useTheme()
-
-    useEffect(() => setMounted(true), [])
 
     return (
         <Navbar className="top-0">
@@ -31,7 +29,7 @@ export default function AppNavbar() {
                         className="p-2 rounded-md hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors"
                         aria-label="Toggle theme"
                     >
-                        {mounted ? (theme === "dark" ? <Sun size={18} /> : <Moon size={18} />) : <Moon size={18} />}
+                        {theme === "dark" ? <Sun size={18} /> : <Moon size={18} />}
                     </button>
                     <NavbarButton variant="dark" href="/login">Start for free</NavbarButton>
                 </div>
@@ -45,7 +43,8 @@ export default function AppNavbar() {
                 <MobileNavMenu isOpen={open} onClose={() => setOpen(false)}>
                     {navItems.map((item) => (
                         <a key={item.name} href={item.link} onClick={() => setOpen(false)}
-                            className="text-neutral-600 dark:text-neutral-300 text-sm font-medium">
+                            className="flex items-center gap-2 text-neutral-600 dark:text-neutral-300 text-sm font-medium">
+                            {item.icon}
                             {item.name}
                         </a>
                     ))}
@@ -53,8 +52,8 @@ export default function AppNavbar() {
                         onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
                         className="flex items-center gap-2 text-neutral-600 dark:text-neutral-300 text-sm font-medium"
                     >
-                        {mounted ? (theme === "dark" ? <Sun size={16} /> : <Moon size={16} />) : <Moon size={16} />}
-                        {mounted ? (theme === "dark" ? "Light mode" : "Dark mode") : "Dark mode"}
+                        {theme === "dark" ? <Sun size={16} /> : <Moon size={16} />}
+                        {theme === "dark" ? "Light mode" : "Dark mode"}
                     </button>
                     <NavbarButton variant="dark" href="/login" className="w-full">Start for free</NavbarButton>
                 </MobileNavMenu>

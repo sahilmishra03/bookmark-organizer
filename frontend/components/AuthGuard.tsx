@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuthStore } from '@/store/authStore'
 import { getRefreshToken, isAccessTokenExpired } from '@/lib/tokenUtils'
+import { useDataStore } from '@/store/dataStore'
 import api from '@/lib/api'
 
 export default function AuthGuard({ children }: { children: React.ReactNode }) {
@@ -12,20 +13,27 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
   const [checking, setChecking] = useState(true)
 
   useEffect(() => {
+    // Fire a lightweight ping to wake the backend while auth is checking
+    const apiUrl = (process.env.NEXT_PUBLIC_API_URL || 'https://bookmark-organizer-jtx3.onrender.com').replace(/\/+$/, '')
+    fetch(apiUrl, { method: 'GET', mode: 'no-cors' }).catch(() => {})
+
     async function check() {
       hydrateFromCookies()
 
       const authState = useAuthStore.getState()
       
-      // Check if we have an access token but no user data
+      // Fast path: valid token exists — render immediately, fetch profile in background
       if (authState.isAuthenticated && !isAccessTokenExpired()) {
+        // Start data prefetch immediately (in parallel with profile fetch)
+        useDataStore.getState().fetchAll()
+
+        setChecking(false) // Unblock rendering NOW
+
+        // Fetch user profile in background (non-blocking)
         if (!authState.user) {
-          // If we have a token but no user data, try to fetch user info
-          try {
-            const { data } = await api.get('/user/profile', {
-              headers: { Authorization: `Bearer ${authState.accessToken}` },
-            })
-            // Update the store with user data
+          api.get('/user/profile', {
+            headers: { Authorization: `Bearer ${authState.accessToken}` },
+          }).then(({ data }) => {
             useAuthStore.getState().setAuth(
               { 
                 name: data.name, 
@@ -35,12 +43,10 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
               authState.accessToken || '', 
               getRefreshToken() || ''
             )
-          } catch (error) {
+          }).catch((error) => {
             console.error('Failed to fetch user profile:', error)
-            // Continue without user data - sidebar will show fallback
-          }
+          })
         }
-        setChecking(false)
         return
       }
 
@@ -56,13 +62,17 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
         })
         updateTokens(data.access_token, data.refresh_token)
         
-        // After refreshing tokens, fetch user data if not available
+        // Start data prefetch immediately after token refresh
+        useDataStore.getState().fetchAll()
+        
+        setChecking(false) // Unblock rendering NOW
+
+        // Fetch user profile in background (non-blocking)
         const updatedAuthState = useAuthStore.getState()
         if (!updatedAuthState.user) {
-          try {
-            const { data: userData } = await api.get('/user/profile', {
-              headers: { Authorization: `Bearer ${data.access_token}` },
-            })
+          api.get('/user/profile', {
+            headers: { Authorization: `Bearer ${data.access_token}` },
+          }).then(({ data: userData }) => {
             useAuthStore.getState().setAuth(
               { 
                 name: userData.name, 
@@ -72,12 +82,10 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
               data.access_token, 
               data.refresh_token
             )
-          } catch (error) {
+          }).catch((error) => {
             console.error('Failed to fetch user profile after refresh:', error)
-          }
+          })
         }
-        
-        setChecking(false)
       } catch {
         clearAuth()
         router.replace('/login')
