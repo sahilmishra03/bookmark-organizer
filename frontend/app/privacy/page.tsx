@@ -11,7 +11,7 @@ export default function PrivacyPolicy() {
 
         <h1 className="text-3xl md:text-5xl font-bold tracking-tight mb-4">Privacy Policy</h1>
         <p className="text-neutral-500 dark:text-neutral-400 mb-12 border-b border-neutral-200 dark:border-neutral-800 pb-8">
-          Last updated: October 24, 2023
+          Last updated: May 6, 2026
         </p>
 
         <div className="space-y-8 text-neutral-600 dark:text-neutral-300 leading-relaxed">

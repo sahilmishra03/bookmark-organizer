@@ -68,6 +68,9 @@ export default function AboutPage() {
           {/* Story */}
           <section className="mb-16">
             <h2 className="text-2xl font-bold mb-4">Our Story</h2>
+            <p className="text-sm text-neutral-500 dark:text-neutral-400 mb-4">
+              Last updated: May 6, 2026
+            </p>
             <p className="text-lg text-neutral-600 dark:text-neutral-300 leading-relaxed">
               Ghostmark started from a simple frustration: bookmark management was broken. We were drowning in browser bookmarks, 
               unable to find important links when we needed them most. After trying countless solutions, we decided to build our own.

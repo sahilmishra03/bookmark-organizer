@@ -1,6 +1,6 @@
 "use client"
 
-const VIDEO_SRC = "https://pub-3b2ce5759e8b401ba99b5a001278e200.r2.dev/Final%20Eduguide.mp4"
+const VIDEO_SRC = "https://pub-3b2ce5759e8b401ba99b5a001278e200.r2.dev/Final%20Ghostmark.mp4"
 
 const Demo = () => {
   return (

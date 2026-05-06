@@ -65,48 +65,70 @@ export default function Changelog() {
   ]
 
   return (
-    <main className="min-h-screen bg-white dark:bg-[#0a0a0a] text-black dark:text-white py-12 md:py-24 px-4 md:px-8">
+    <main className="min-h-screen bg-white dark:bg-[#0a0a0a] text-black dark:text-white py-12 md:py-24 px-5 sm:px-8">
       <div className="max-w-3xl mx-auto">
-        <Link href="/" className="inline-flex items-center gap-2 text-sm text-neutral-500 hover:text-black dark:hover:text-white transition-colors mb-8 md:mb-12">
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
+        <Link 
+          href="/" 
+          className="inline-flex items-center gap-2 text-sm text-neutral-500 hover:text-black dark:hover:text-white transition-colors mb-10 md:mb-12"
+        >
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+          </svg>
           Back to Home
         </Link>
 
         <h1 className="text-3xl md:text-5xl font-bold tracking-tight mb-4">Changelog</h1>
-        <p className="text-neutral-500 dark:text-neutral-400 mb-16">
+        <p className="text-base text-neutral-500 dark:text-neutral-400 mb-12 md:mb-16">
           Updates and upcoming features of Ghostmark.
         </p>
 
-        {/* Timeline Container */}
-        <div className="space-y-12 border-l border-neutral-200 dark:border-neutral-800 ml-3 md:ml-0 md:pl-8">
-          {updates.map((update, index) => (
-            <div key={index} className="relative pl-8 md:pl-0">
-              
-              {/* Timeline Dot */}
-              <div className="absolute w-3 h-3 bg-black dark:bg-white rounded-full -left-[38px] md:-left-[38px] top-1.5 ring-4 ring-white dark:ring-[#0a0a0a]"></div>
-              
-              {/* Content */}
-              <div className="flex flex-col md:flex-row md:items-baseline gap-2 md:gap-6 mb-3">
-                <span className="px-2.5 py-1 text-xs font-semibold bg-neutral-100 dark:bg-neutral-800 rounded-md w-fit">
-                  {update.version}
-                </span>
-                <span className="text-sm text-neutral-500 dark:text-neutral-400">
-                  {update.date}
-                </span>
+        {/* Unified Timeline Container */}
+        <div className="relative border-l border-neutral-200 dark:border-neutral-800 ml-2 md:ml-4 space-y-12 pb-8">
+          {updates.map((update, index) => {
+            const isUpcoming = update.version.includes("Upcoming") || update.version.includes("Planned");
+
+            return (
+              <div key={index} className="relative pl-6 md:pl-10">
+                {/* Timeline Dot */}
+                <div 
+                  className={`absolute w-3 h-3 rounded-full -left-[6.5px] top-1.5 ring-4 ring-white dark:ring-[#0a0a0a] ${
+                    isUpcoming 
+                      ? "bg-neutral-300 dark:bg-neutral-600" 
+                      : "bg-black dark:bg-white"
+                  }`}
+                ></div>
+                
+                {/* Content */}
+                <div>
+                  <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 mb-3">
+                    <span className={`px-2.5 py-1 text-xs font-semibold rounded-md w-fit ${
+                      isUpcoming 
+                        ? "bg-neutral-100 text-neutral-500 dark:bg-neutral-900 dark:text-neutral-400" 
+                        : "bg-neutral-100 dark:bg-neutral-800 text-black dark:text-white"
+                    }`}>
+                      {update.version}
+                    </span>
+                    <span className="text-sm font-medium text-neutral-500 dark:text-neutral-400">
+                      {update.date}
+                    </span>
+                  </div>
+                  
+                  <h2 className="text-lg md:text-xl font-bold mb-3 md:mb-4 tracking-tight">
+                    {update.title}
+                  </h2>
+                  
+                  <ul className="space-y-2.5 text-sm md:text-base text-neutral-600 dark:text-neutral-300">
+                    {update.changes.map((change, i) => (
+                      <li key={i} className="flex gap-3 leading-relaxed">
+                        <span className="text-neutral-300 dark:text-neutral-700 mt-0.5">—</span>
+                        <span className="flex-1">{change}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
               </div>
-              
-              <h2 className="text-xl font-bold mb-4">{update.title}</h2>
-              
-              <ul className="space-y-3 text-neutral-600 dark:text-neutral-300">
-                {update.changes.map((change, i) => (
-                  <li key={i} className="flex gap-3">
-                    <span className="text-neutral-300 dark:text-neutral-700 mt-1.5">-</span>
-                    <span>{change}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
     </main>
