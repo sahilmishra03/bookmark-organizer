@@ -65,6 +65,29 @@ async def import_html_bookmarks(
         folder_cache[cache_key] = folder
         return folder
 
+    def get_or_create_imported_folder():
+        """Create or get the 'Imported Bookmarks' folder for orphaned bookmarks"""
+        folder_name = "Imported Bookmarks"
+        if folder_name in folder_cache:
+            return folder_cache[folder_name]
+
+        folder = db.query(Folder).filter(
+            Folder.name == folder_name,
+            Folder.user_id == user_id
+        ).first()
+
+        if not folder:
+            folder = Folder(
+                id=uuid4(),
+                name=folder_name,
+                user_id=user_id
+            )
+            db.add(folder)
+            db.flush()
+
+        folder_cache[folder_name] = folder
+        return folder
+
     def get_or_create_tag(name: str):
         if name in tag_cache:
             return tag_cache[name]
@@ -118,16 +141,14 @@ async def import_html_bookmarks(
                 if not url:
                     continue
 
-                if parent_folder is not None:
-                    exists = db.query(Bookmark).join(Folder).filter(
-                        Bookmark.url == url,
-                        Folder.user_id == user_id
-                    ).first()
-                else:
-                    exists = db.query(Bookmark).filter(
-                        Bookmark.url == url,
-                        Bookmark.folder_id == None
-                    ).first()
+                # If no parent folder, assign to "Imported Bookmarks" folder
+                if parent_folder is None:
+                    parent_folder = get_or_create_imported_folder()
+
+                exists = db.query(Bookmark).join(Folder).filter(
+                    Bookmark.url == url,
+                    Folder.user_id == user_id
+                ).first()
 
                 if exists:
                     continue
