@@ -29,7 +29,8 @@ export default function AppNavbar() {
                         className="p-2 rounded-md hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors"
                         aria-label="Toggle theme"
                     >
-                        {theme === "dark" ? <Sun size={18} /> : <Moon size={18} />}
+                        <Sun size={18} className="hidden dark:block" />
+                        <Moon size={18} className="block dark:hidden" />
                     </button>
                     <NavbarButton variant="dark" href="/login">Start for free</NavbarButton>
                 </div>
@@ -52,8 +53,10 @@ export default function AppNavbar() {
                         onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
                         className="flex items-center gap-2 text-neutral-600 dark:text-neutral-300 text-sm font-medium"
                     >
-                        {theme === "dark" ? <Sun size={16} /> : <Moon size={16} />}
-                        {theme === "dark" ? "Light mode" : "Dark mode"}
+                        <Sun size={16} className="hidden dark:block" />
+                        <Moon size={16} className="block dark:hidden" />
+                        <span className="hidden dark:inline">Light mode</span>
+                        <span className="inline dark:hidden">Dark mode</span>
                     </button>
                     <NavbarButton variant="dark" href="/login" className="w-full">Start for free</NavbarButton>
                 </MobileNavMenu>

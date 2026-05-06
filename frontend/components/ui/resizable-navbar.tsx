@@ -237,18 +237,24 @@ export const MobileNavToggle = ({
 };
 
 export const NavbarLogo = () => {
-  const { theme } = useTheme();
-
   return (
     <Link
       href="/"
       className="relative z-20 mr-4 flex items-center space-x-2 px-2 py-1 text-sm font-normal text-black"
     >
       <img
-        src={theme === "dark" ? "/logo-dark.svg" : "/logo-light.svg"}
+        src="/logo-dark.svg"
         alt="logo"
         width={30}
         height={30}
+        className="hidden dark:block"
+      />
+      <img
+        src="/logo-light.svg"
+        alt="logo"
+        width={30}
+        height={30}
+        className="block dark:hidden"
       />
       <span className="font-medium text-black dark:text-white">Ghostmark</span>
     </Link>
