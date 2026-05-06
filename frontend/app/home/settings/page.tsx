@@ -8,9 +8,7 @@ import { useDataStore } from "@/store/dataStore"
 import type { Bookmark, Folder } from "@/lib/types"
 
 export default function SettingsPage() {
-  const { invalidate } = useDataStore()
-  const [bookmarks, setBookmarks] = useState<Bookmark[]>([])
-  const [folders, setFolders] = useState<Folder[]>([])
+  const { invalidate, forceRefresh, bookmarks, folders, isLoading: storeLoading } = useDataStore()
   const [loading, setLoading] = useState(true)
   const [exporting, setExporting] = useState(false)
   const [importing, setImporting] = useState(false)
@@ -21,14 +19,11 @@ export default function SettingsPage() {
   } | null>(null)
 
   useEffect(() => {
-    Promise.all([
-      api.get<Bookmark[]>("/v1/bookmarks/allbookmarks"),
-      api.get<Folder[]>("/v1/folders"),
-    ]).then(([bRes, fRes]) => {
-      setBookmarks(bRes.data)
-      setFolders(fRes.data)
-    }).catch(() => {}).finally(() => setLoading(false))
-  }, [])
+    // Initial loading state - wait for store to load
+    if (!storeLoading) {
+      setLoading(false)
+    }
+  }, [storeLoading])
 
   const handleExportHTML = async () => {
     setExporting(true)
@@ -72,16 +67,8 @@ export default function SettingsPage() {
         }
       })
 
-      // Refresh data
-      const [bRes, fRes] = await Promise.all([
-        api.get<Bookmark[]>("/v1/bookmarks/allbookmarks"),
-        api.get<Folder[]>("/v1/folders"),
-      ])
-      setBookmarks(bRes.data)
-      setFolders(fRes.data)
-      
-      // Invalidate global data store to refresh other pages
-      invalidate()
+      // Force refresh global data store - this will update all pages instantly
+      await forceRefresh()
 
       setImportResult({
         success: true,

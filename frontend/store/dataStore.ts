@@ -11,6 +11,7 @@ interface DataState {
 
   // Core fetch — called once, shared across all pages
   fetchAll: () => Promise<void>
+  forceRefresh: () => Promise<void>
   invalidate: () => void
 
   // Bookmark mutators
@@ -35,6 +36,25 @@ export const useDataStore = create<DataState>((set, get) => ({
     const { isLoaded, isLoading } = get()
     if (isLoaded || isLoading) return
 
+    set({ isLoading: true })
+    try {
+      const [bRes, fRes, favRes] = await Promise.all([
+        api.get<Bookmark[]>('/v1/bookmarks/allbookmarks'),
+        api.get<Folder[]>('/v1/folders'),
+        api.get<Bookmark[]>('/v1/bookmarks/favorites'),
+      ])
+      set({
+        bookmarks: bRes.data,
+        folders: fRes.data,
+        favorites: favRes.data,
+        isLoaded: true,
+      })
+    } finally {
+      set({ isLoading: false })
+    }
+  },
+
+  forceRefresh: async () => {
     set({ isLoading: true })
     try {
       const [bRes, fRes, favRes] = await Promise.all([
