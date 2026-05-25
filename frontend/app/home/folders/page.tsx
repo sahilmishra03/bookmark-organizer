@@ -29,11 +29,14 @@ function SkeletonCards() {
 
 export default function FoldersPage() {
   const { folders, bookmarks, isLoaded } = useDataStore()
-  const { addFolder: addFolderToStore, deleteFolder: deleteFolderFromStore } = useDataStore()
+  const { addFolder: addFolderToStore, updateFolder: updateFolderInStore, deleteFolder: deleteFolderFromStore } = useDataStore()
 
   const router = useRouter()
   const [showModal, setShowModal] = useState(false)
   const [newName, setNewName] = useState("")
+  const [showRenameModal, setShowRenameModal] = useState(false)
+  const [renameFolderId, setRenameFolderId] = useState<string | null>(null)
+  const [renameName, setRenameName] = useState("")
   const [saving, setSaving] = useState(false)
 
   const loading = !isLoaded
@@ -50,6 +53,26 @@ export default function FoldersPage() {
       addFolderToStore(data)
       setShowModal(false)
       setNewName("")
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  const openRename = (folder: Folder) => {
+    setRenameFolderId(folder.id)
+    setRenameName(folder.name)
+    setShowRenameModal(true)
+  }
+
+  const handleRename = async () => {
+    if (!renameFolderId || !renameName.trim()) return
+    setSaving(true)
+    try {
+      const { data } = await api.put<Folder>(`/v1/folders/${renameFolderId}`, { name: renameName.trim() })
+      updateFolderInStore(data)
+      setShowRenameModal(false)
+      setRenameFolderId(null)
+      setRenameName("")
     } finally {
       setSaving(false)
     }
@@ -87,6 +110,7 @@ export default function FoldersPage() {
               color={CARD_COLOR}
               onClick={() => router.push(`/home/folders/${f.id}`)}
               onDelete={() => handleDelete(f.id)}
+              onRename={() => openRename(f)}
             />
           ))}
           <div
@@ -119,6 +143,32 @@ export default function FoldersPage() {
                 className="px-4 py-2 rounded-lg bg-neutral-900 dark:bg-neutral-100 text-white dark:text-neutral-900 text-sm font-medium hover:opacity-90 disabled:opacity-50"
               >
                 {saving ? "Creating…" : "Create"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showRenameModal && (
+        <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center p-4">
+          <div className="bg-white dark:bg-neutral-900 rounded-xl border border-neutral-200 dark:border-neutral-800 w-full max-w-sm p-6">
+            <h2 className="text-base font-semibold text-neutral-900 dark:text-neutral-100 mb-4">Rename Folder</h2>
+            <input
+              autoFocus
+              placeholder="Folder name *"
+              value={renameName}
+              onChange={e => setRenameName(e.target.value)}
+              onKeyDown={e => e.key === "Enter" && handleRename()}
+              className="w-full px-3 py-2 rounded-lg border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-sm outline-none focus:ring-2 focus:ring-neutral-400 text-neutral-900 dark:text-neutral-100 placeholder:text-neutral-400"
+            />
+            <div className="flex justify-end gap-2 mt-5">
+              <button onClick={() => setShowRenameModal(false)} className="px-4 py-2 text-sm text-neutral-500 hover:text-neutral-700 dark:hover:text-neutral-300">Cancel</button>
+              <button
+                onClick={handleRename}
+                disabled={saving}
+                className="px-4 py-2 rounded-lg bg-neutral-900 dark:bg-neutral-100 text-white dark:text-neutral-900 text-sm font-medium hover:opacity-90 disabled:opacity-50"
+              >
+                {saving ? "Saving…" : "Save"}
               </button>
             </div>
           </div>

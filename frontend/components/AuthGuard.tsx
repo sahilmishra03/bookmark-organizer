@@ -12,16 +12,21 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
   const { hydrateFromCookies, updateTokens, clearAuth } = useAuthStore()
   const [checking, setChecking] = useState(true)
 
+  const safeReplace = (url: string) => {
+    if (typeof window === 'undefined') return
+    window.setTimeout(() => router.replace(url), 0)
+  }
+
   useEffect(() => {
     // Fire a lightweight ping to wake the backend while auth is checking
     const apiUrl = (process.env.NEXT_PUBLIC_API_URL || 'https://bookmark-organizer-jtx3.onrender.com').replace(/\/+$/, '')
-    fetch(apiUrl, { method: 'GET', mode: 'no-cors' }).catch(() => {})
+    fetch(apiUrl, { method: 'GET', mode: 'no-cors' }).catch(() => { })
 
     async function check() {
       hydrateFromCookies()
 
       const authState = useAuthStore.getState()
-      
+
       // Fast path: valid token exists — render immediately, fetch profile in background
       if (authState.isAuthenticated && !isAccessTokenExpired()) {
         // Start data prefetch immediately (in parallel with profile fetch)
@@ -35,12 +40,12 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
             headers: { Authorization: `Bearer ${authState.accessToken}` },
           }).then(({ data }) => {
             useAuthStore.getState().setAuth(
-              { 
-                name: data.name, 
-                email: data.email, 
-                profile_picture: data.profile_picture 
-              }, 
-              authState.accessToken || '', 
+              {
+                name: data.name,
+                email: data.email,
+                profile_picture: data.profile_picture
+              },
+              authState.accessToken || '',
               getRefreshToken() || ''
             )
           }).catch((error) => {
@@ -52,7 +57,7 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
 
       const refreshToken = getRefreshToken()
       if (!refreshToken) {
-        router.replace('/login')
+        safeReplace('/login')
         return
       }
 
@@ -61,10 +66,10 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
           headers: { Authorization: `Bearer ${refreshToken}` },
         })
         updateTokens(data.access_token, data.refresh_token)
-        
+
         // Start data prefetch immediately after token refresh
         useDataStore.getState().fetchAll()
-        
+
         setChecking(false) // Unblock rendering NOW
 
         // Fetch user profile in background (non-blocking)
@@ -74,12 +79,12 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
             headers: { Authorization: `Bearer ${data.access_token}` },
           }).then(({ data: userData }) => {
             useAuthStore.getState().setAuth(
-              { 
-                name: userData.name, 
-                email: userData.email, 
-                profile_picture: userData.profile_picture 
-              }, 
-              data.access_token, 
+              {
+                name: userData.name,
+                email: userData.email,
+                profile_picture: userData.profile_picture
+              },
+              data.access_token,
               data.refresh_token
             )
           }).catch((error) => {
@@ -88,7 +93,7 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
         }
       } catch {
         clearAuth()
-        router.replace('/login')
+        safeReplace('/login')
       }
     }
 

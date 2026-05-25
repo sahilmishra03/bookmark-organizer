@@ -9,6 +9,11 @@ function CallbackHandler() {
   const router = useRouter()
   const setAuth = useAuthStore((s) => s.setAuth)
 
+  const safeReplace = (url: string) => {
+    if (typeof window === 'undefined') return
+    window.setTimeout(() => router.replace(url), 0)
+  }
+
   useEffect(() => {
     const accessToken = searchParams.get('access_token')
     const refreshToken = searchParams.get('refresh_token')
@@ -21,9 +26,9 @@ function CallbackHandler() {
 
     if (accessToken && refreshToken) {
       setAuth({ name, email, profile_picture }, accessToken, refreshToken)
-      router.replace('/home')
+      safeReplace('/home')
     } else {
-      router.replace('/login?error=auth_failed')
+      safeReplace('/login?error=auth_failed')
     }
   }, [])
 

@@ -31,8 +31,9 @@ export default function FolderDetailPage() {
 
   // Update folder from store if it arrives later
   useEffect(() => {
-    if (storeFolder && !folder) setFolder(storeFolder)
-  }, [storeFolder, folder])
+    if (!storeFolder) return
+    setFolder(storeFolder)
+  }, [storeFolder])
 
   useEffect(() => {
     // Fetch folder-specific bookmarks (these aren't necessarily in the global store)

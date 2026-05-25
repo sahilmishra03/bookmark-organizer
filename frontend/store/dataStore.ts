@@ -22,6 +22,7 @@ interface DataState {
 
   // Folder mutators
   addFolder: (folder: Folder) => void
+  updateFolder: (folder: Folder) => void
   deleteFolder: (folderId: string) => void
 }
 
@@ -114,6 +115,12 @@ export const useDataStore = create<DataState>((set, get) => ({
 
   addFolder: (folder) => {
     set((s) => ({ folders: [...s.folders, folder] }))
+  },
+
+  updateFolder: (folder) => {
+    set((s) => ({
+      folders: s.folders.map((f) => (f.id === folder.id ? folder : f)),
+    }))
   },
 
   deleteFolder: (folderId) => {

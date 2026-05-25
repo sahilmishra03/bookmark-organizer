@@ -8,7 +8,7 @@ import { timeAgo, stripProtocol } from "@/lib/timeUtils"
 import { formatTagInput, parseTagInput } from "@/lib/utils"
 import type { Bookmark, Folder } from "@/lib/types"
 
-type EditForm = { title: string; url: string; description: string; favorite: boolean; tags: string }
+type EditForm = { title: string; url: string; description: string; favorite: boolean; tags: string; folder_id: string }
 
 /* ── Skeleton ─────────────────────────────── */
 function SkeletonRows() {
@@ -38,7 +38,7 @@ export default function BookmarksPage() {
   const [form, setForm] = useState({ title: "", url: "", description: "", folder_id: "", tags: "" })
   const [saving, setSaving] = useState(false)
   const [editTarget, setEditTarget] = useState<Bookmark | null>(null)
-  const [editForm, setEditForm] = useState<EditForm>({ title: "", url: "", description: "", favorite: false, tags: "" })
+  const [editForm, setEditForm] = useState<EditForm>({ title: "", url: "", description: "", favorite: false, tags: "", folder_id: "" })
 
   const loading = !isLoaded
   const folderMap = Object.fromEntries(folders.map(f => [f.id, f.name]))
@@ -81,16 +81,30 @@ export default function BookmarksPage() {
 
   const openEdit = (b: Bookmark) => {
     setEditTarget(b)
-    setEditForm({ title: b.title, url: b.url, description: b.description ?? "", favorite: b.favorite, tags: formatTagInput(b.tags) })
+    setEditForm({
+      title: b.title,
+      url: b.url,
+      description: b.description ?? "",
+      favorite: b.favorite,
+      tags: formatTagInput(b.tags),
+      folder_id: b.folder_id,
+    })
   }
 
   const handleEdit = async () => {
-    if (!editTarget || !editForm.title.trim() || !editForm.url.trim()) return
+    if (!editTarget || !editForm.title.trim() || !editForm.url.trim() || !editForm.folder_id) return
     setSaving(true)
     try {
       const { data } = await api.put<Bookmark>(
         `/v1/bookmarks/folders/${editTarget.folder_id}/bookmarks/${editTarget.id}`,
-        { title: editForm.title, url: editForm.url, description: editForm.description || null, favorite: editForm.favorite, tags: parseTagInput(editForm.tags) }
+        {
+          title: editForm.title,
+          url: editForm.url,
+          description: editForm.description || null,
+          favorite: editForm.favorite,
+          tags: parseTagInput(editForm.tags),
+          folder_id: editForm.folder_id,
+        }
       )
       updateBookmark(data)
       setEditTarget(null)
@@ -220,6 +234,15 @@ export default function BookmarksPage() {
                 onChange={e => setEditForm(f => ({ ...f, description: e.target.value }))}
                 className="px-3 py-2 rounded-lg border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-sm outline-none focus:ring-2 focus:ring-neutral-400 text-neutral-900 dark:text-neutral-100 placeholder:text-neutral-400"
               />
+              <select
+                value={editForm.folder_id}
+                onChange={e => setEditForm(f => ({ ...f, folder_id: e.target.value }))}
+                className="px-3 py-2 rounded-lg border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-sm outline-none focus:ring-2 focus:ring-neutral-400 text-neutral-900 dark:text-neutral-100"
+              >
+                {folders.map(folder => (
+                  <option key={folder.id} value={folder.id}>{folder.name}</option>
+                ))}
+              </select>
               <input
                 placeholder="Tags (comma separated)"
                 value={editForm.tags}

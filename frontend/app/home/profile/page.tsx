@@ -31,9 +31,14 @@ export default function ProfilePage() {
   useEffect(() => {
     api.get<MeResponse>("/me")
       .then(({ data }) => setMeData(data.user))
-      .catch(() => {})
+      .catch(() => { })
       .finally(() => setLoading(false))
   }, [])
+
+  const safeReplace = (url: string) => {
+    if (typeof window === 'undefined') return
+    window.setTimeout(() => router.replace(url), 0)
+  }
 
   const handleLogout = async () => {
     setLoggingOut(true)
@@ -41,10 +46,10 @@ export default function ProfilePage() {
     if (refreshToken) {
       await api.post("/logout", null, {
         headers: { Authorization: `Bearer ${refreshToken}` },
-      }).catch(() => {})
+      }).catch(() => { })
     }
     clearAuth()
-    router.replace("/login")
+    safeReplace("/login")
   }
 
   const displayName = user?.name || meData?.email?.split("@")[0] || "User"
