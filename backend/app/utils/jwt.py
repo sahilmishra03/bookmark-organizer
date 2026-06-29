@@ -1,3 +1,4 @@
+import uuid
 from jose import jwt, JWTError
 from datetime import datetime, timedelta
 from ..config import settings
@@ -17,7 +18,8 @@ def create_access_token(data: dict):
         "iat": datetime.utcnow(),
         "type": "access",
         "iss": "bookmark-organizer",
-        "sub": str(data.get("user_id", ""))
+        "sub": str(data.get("user_id", "")),
+        "jti": uuid.uuid4().hex
     })
 
     return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
@@ -31,7 +33,8 @@ def create_refresh_token(data: dict):
         "iat": datetime.utcnow(),
         "type": "refresh",
         "iss": "bookmark-organizer",
-        "sub": str(data.get("user_id", ""))
+        "sub": str(data.get("user_id", "")),
+        "jti": uuid.uuid4().hex
     })
 
     return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
