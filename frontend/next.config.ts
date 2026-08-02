@@ -1,6 +1,15 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  async redirects() {
+    return [
+      {
+        source: "/maintenance",
+        destination: "/",
+        permanent: false,
+      },
+    ];
+  },
   /* config options here */
   allowedDevOrigins:['192.168.1.32'],
   images: {
