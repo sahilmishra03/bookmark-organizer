@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 
 // Toggle this to false (or use process.env.MAINTENANCE_MODE === 'true') to disable maintenance redirection
-const MAINTENANCE_MODE = true
+const MAINTENANCE_MODE = false
 
 export function proxy(request: NextRequest) {
   const path = request.nextUrl.pathname
